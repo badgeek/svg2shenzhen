@@ -44,6 +44,8 @@
 #include <potracelib.h>
 #include <auxiliary.h>
 
+#include <locale.h>     /* struct lconv, setlocale, localeconv */
+
 /* free a potrace bitmap */
 static void bm_free( potrace_bitmap_t* bm )
 {
@@ -137,8 +139,6 @@ int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
     potrace_param_t* param;
     potrace_state_t* st;
 
-    printf("allocating param");
-
     // set tracing parameters, starting from defaults
     param = potrace_param_default();
     if( !param )
@@ -149,9 +149,10 @@ int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
     param->turdsize = 0;
 
     /* convert the bitmap to curves */
-    printf("convert");
     
     st = potrace_trace( param, aPotrace_bitmap );
+
+
     if( !st || st->status != POTRACE_STATUS_OK )
     {
         if( st )
@@ -195,10 +196,11 @@ int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
         break;
 
     case PCBNEW_KICAD_MOD:
+
         info.m_Format = PCBNEW_KICAD_MOD;
         info.m_ScaleX = 1e6 * 25.4 / aDpi_X;       // the conversion scale from PPI to UI
         info.m_ScaleY = 1e6 * 25.4 / aDpi_Y;       // Y axis is top to bottom in modedit
-        printf("scale %f", info.m_ScaleY);
+
         info.CreateOutputFile( aModLayer );
         break;
 
@@ -431,7 +433,17 @@ void BITMAPCONV_INFO::CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer )
 
     potrace_dpoint_t( *c )[3];
 
+
+
+
     // LOCALE_IO toggle;   // Temporary switch the locale to standard C to r/w floats
+
+
+    std::string m_user_locale = setlocale( LC_ALL, 0 );
+    // Switch the locale to C locale, to read/write files with fp numbers
+    setlocale( LC_ALL, "C" );
+
+
 
     // The layer name has meaning only for .kicad_mod files.
     // For these files the header creates 2 invisible texts: value and ref
@@ -518,6 +530,8 @@ void BITMAPCONV_INFO::CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer )
     }
 
     OuputFileEnd();
+
+    setlocale( LC_ALL, m_user_locale.c_str() );
 }
 
 
