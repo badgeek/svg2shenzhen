@@ -185,25 +185,29 @@ int main(int argc, char* argv[])
 
     /* fill the bitmap with data */
     
-    for( int y = 0; y < width; y++ )
+    for( int y = 0; y < height; y++ )
     {
-        for( int x = 0; x < height; x++ )
+        for( int x = 0; x < width; x++ )
         {
-            int start = (y * width * 4) + x * 4;
+            int start = (y * height * 4) + x * 4;
             unsigned char pix = image[start+1];
+
+            //transparent = white
+            if (image[start+3] == 0)
+                pix = 255;
 
             //grayscale
             // pix = (image[start+0] * 0.2126 + image[start+1] * 0.7152 + image[start+2] * 0.0722);
+
+            //invert image
+            if (negative)
+                pix = 255-pix;
 
             // treshold 128
             if( pix < threshold )
                 pix = 0;
              else
                 pix = 255;
-
-            //invert image
-            if (negative)
-                pix = 255-pix;
 
             BM_PUT( potrace_bitmap, x, y, pix ? 1 : 0 );
         }
@@ -215,6 +219,8 @@ int main(int argc, char* argv[])
    fprintf(pFile, pcb_header.c_str());
    bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, 600, 600, MOD_LYR_ECO1 );
    fprintf(pFile, pcb_footer.c_str());
+
+
    fclose( pFile );
 
    printf("[bitmap2component] Done\n");
