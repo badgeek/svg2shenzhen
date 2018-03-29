@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     {
         for( int x = 0; x < height; x++ )
         {
-            int start = (y * height * 4) + x * 4;
+            int start = (y * width * 4) + x * 4;
             unsigned char pix = image[start+1];
 
             //grayscale
