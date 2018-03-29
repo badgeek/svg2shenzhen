@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
         threshold = stoi(string(argv[4]));
     }    
 
-    printf("[bitmap2component] filename %s\n", image_filename.c_str());
+    printf("[bitmap2component] Filename %s\n", image_filename.c_str());
 
     FILE * pFile;
     pFile = fopen (output_filename.c_str(),"w");
@@ -63,25 +63,25 @@ int main(int argc, char* argv[])
 	unsigned width, height;
 	//decode
 
-    printf("[bitmap2component] open bitmap\n");
+    printf("[bitmap2component] Open bitmap\n");
 
 	unsigned error = lodepng::decode(image, width, height, image_filename.c_str());
 
 	//if there's an error, display it
 	if(error) {
-        std::cout << "[bitmap2component] decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+        std::cout << "[bitmap2component] Decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
         return -1;
     }else{
-        printf("[bitmap2component] loaded png s: %i x %i\n", width, height);
+        printf("[bitmap2component] Loaded png s: %i x %i\n", width, height);
     }
 	
-   printf("[bitmap2component] create bitmap\n");
+   printf("[bitmap2component] Create bitmap\n");
 
    potrace_bitmap_t* potrace_bitmap = bm_new( width, height );
 
 	// the pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA..., use it as texture, draw it, ...
 
-   printf("[bitmap2component] fill bitmap\n");
+   printf("[bitmap2component] Fill bitmap\n");
 
     /* fill the bitmap with data */
     
@@ -110,11 +110,11 @@ int main(int argc, char* argv[])
         // printf("\n");
     }
 
-   printf("[bitmap2component] trace image\n");
+   printf("[bitmap2component] Trace image\n");
 
    bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, width, height, MOD_LYR_ECO1 );
    fclose( pFile );
 
-   printf("[bitmap2component] done\n");
+   printf("[bitmap2component] Done\n");
 
 }
