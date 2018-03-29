@@ -1,0 +1,4 @@
+.DS_Store
+.o
+include/boost/*
+*.o

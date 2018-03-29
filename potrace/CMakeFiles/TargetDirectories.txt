@@ -1,0 +1,3 @@
+/Users/xcorex/kicad-source-mirror/potrace/CMakeFiles/rebuild_cache.dir
+/Users/xcorex/kicad-source-mirror/potrace/CMakeFiles/edit_cache.dir
+/Users/xcorex/kicad-source-mirror/potrace/CMakeFiles/potrace.dir
