@@ -10,7 +10,7 @@ TODO
 
 Download [svg2shenzhen](https://github.com/badgeek/svg2shenzhen-next/releases/download/0.2/svg2shenzhen-extension.zip) extension
 
-Copy the *.py and *.inx files into the directory indicated in Edit -> Preferences -> System: User extensions
+Extract and copy the files into the directory indicated in Edit -> Preferences -> System: User extensions
 
 ## How to
 
