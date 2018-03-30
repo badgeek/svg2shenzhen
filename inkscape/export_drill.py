@@ -49,52 +49,8 @@ class PNGExport(inkex.Effect):
         self.bb_height_center = viewbox_h/2	
         self.bb_scaling = viewbox_h/height
 
-    def exportDrill(self):
-        x0 = 0
-        y0 = 0
-        mirror = 1.0
 
-        self.setInkscapeScaling()
-
-
-        i = 0
-        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
-        for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
-
-            i += 1
-            
-            layer_name = (layer.attrib[label_attrib_name])
-
-            layer_trans = layer.get('transform')
-            if layer_trans:
-                layer_m = simpletransform.parseTransform(layer_trans)
-            else:
-                layer_m = identity_m
-            
-            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:circle') % i
-            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                cx = float(node.get('cx'))
-                cy = float(node.get('cy'))
-                t = node.get('transform')
-
-                pt = [cx, cy]
-
-                if t:
-                    m = simpletransform.parseTransform(t)
-                    trans = simpletransform.composeTransform(layer_m, m)
-                else:
-                    trans = layer_m
-
-                simpletransform.applyTransformToPoint(trans,pt)
-                padCoord = self.coordToKicad(pt)
-
-
-                inkex.debug("(pad %d thru_hole circle (at %f %f) (size 1.524 1.524) (drill 0.762) (layers *.Cu *.Mask))" % (1, padCoord[0], padCoord[1]))
-
-    def makeDocumentSquare(self):
+    def setDocumentSquare(self):
         root = self.document.getroot()
         height = float(root.attrib['height'].replace("mm", ""))
         width =  float(root.attrib['width'].replace("mm", ""))
@@ -105,79 +61,7 @@ class PNGExport(inkex.Effect):
         else:
             root.attrib['width'] = str(height) + "mm"
             root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
-
-        
             
-        
-
-    def exportEdgeCut(self):
-        x0 = 0
-        y0 = 0
-        mirror = 1.0
-
-        self.makeDocumentSquare()
-        self.setInkscapeScaling()
-
-
-        i = 0
-        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
-        for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
-            i += 1
-
-
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
-
-            
-            layer_name = (layer.attrib[label_attrib_name])
-
-
-            if layer_name != "Edge.Cut":
-                continue
-
-            layer_trans = layer.get('transform')
-            if layer_trans:
-                layer_m = simpletransform.parseTransform(layer_trans)
-            else:
-                layer_m = identity_m
-            
-            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
-            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                d = node.get('d')
-                p = simplepath.parsePath(d)
-
-                points = []
-                if p:
-                    #sanity check
-                    if p[0][0] == 'M':
-                        t = node.get('transform')
-                        if t:
-                            m = simpletransform.parseTransform(t)
-                            trans = simpletransform.composeTransform(layer_m, m)
-                        else:
-                            trans = layer_m
-
-                        # inkex.debug(p[0])
-                        for path in p:
-                            if path[0] != "Z":
-                                # inkex.debug(path[0])
-                                x = (path[1][0])
-                                y = (path[1][1])
-                                xy = [x,y]
-                                simpletransform.applyTransformToPoint(trans,xy)
-                                points.append(self.coordToKicad([(xy[0]-x0), xy[1]*mirror-y0]))
-
-                        # inkex.debug(points)
-
-                        points_count = len(points)
-                        points.append(points[0])
-
-                        offset = 0
-                        for x in range (0, points_count):
-                            inkex.debug("(gr_line (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))"  % (points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
-
-
 
     def createLayer(self, layer_name):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
@@ -212,14 +96,12 @@ class PNGExport(inkex.Effect):
         self.createLayer("Drill")     
 
     def effect(self):
-        self.makeDocumentSquare()
+        self.setDocumentSquare()
         self.setInkscapeScaling()
         
         self.prepareDocument()
         # self.exportDrill()
-        # self.exportEdgeCut()
-
-        
+        # self.exportEdgeCut()        
         # self.createLayer("B.Cu_Test")
         # self.createLayer("F.Masks_Test")
         
