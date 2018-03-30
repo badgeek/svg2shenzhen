@@ -9,6 +9,8 @@ import tempfile
 import shutil
 import copy
 
+import simplepath, simpletransform
+from simplestyle import *
 
 pcb_header = '''
 (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -186,10 +188,10 @@ class PNGExport(inkex.Effect):
 
         if (width > height):
             root.attrib['height'] = str(width) + "mm"
+            root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
         else:
             root.attrib['width'] = str(height) + "mm"
-
-        root.attrib['viewbox'] = "0 0 %f %f" % (width, height)
+            root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
     
     def createLayer(self, layer_name):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
@@ -224,6 +226,7 @@ class PNGExport(inkex.Effect):
         self.setDocumentSquare()
         self.setInkscapeScaling()
         self.processExportLayer()
+        # inkex.debug(self.exportEdgeCut())
 
     def processExportLayer(self):
         output_path = os.path.expanduser(self.options.path)
@@ -267,6 +270,8 @@ class PNGExport(inkex.Effect):
 
             counter += 1
         
+
+        kicad_edgecut_string = self.exportEdgeCut()
         kicad_modules_string = ""
 
         for kicad_file in kicad_mod_files:
@@ -277,6 +282,7 @@ class PNGExport(inkex.Effect):
         with open(kicad_pcb_path, 'w') as the_file:
             the_file.write(pcb_header)
             the_file.write(kicad_modules_string)
+            the_file.write(kicad_edgecut_string)
             the_file.write(pcb_footer)
 
 
@@ -347,8 +353,7 @@ class PNGExport(inkex.Effect):
         y0 = 0
         mirror = 1.0
 
-        self.makeDocumentSquare()
-        self.setInkscapeScaling()
+        kicad_edgecut_string = ""
 
         i = 0
         layerPath = '//svg:g[@inkscape:groupmode="layer"]'
@@ -361,7 +366,7 @@ class PNGExport(inkex.Effect):
             
             layer_name = (layer.attrib[label_attrib_name])
 
-            if layer_name != "Edge.Cut":
+            if layer_name != "Edge.Cuts":
                 continue
 
             layer_trans = layer.get('transform')
@@ -398,8 +403,9 @@ class PNGExport(inkex.Effect):
                         points.append(points[0])
 
                         for x in range (0, points_count):
-                            inkex.debug("(gr_line (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))"  % (points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
-
+                            kicad_edgecut_string = kicad_edgecut_string + ("(gr_line (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))\n"  % (points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
+        
+        return kicad_edgecut_string
 
     def exportDrill(self):
         x0 = 0
