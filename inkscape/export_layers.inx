@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Export Kicad</_name>
+    <_name>2. Export Kicad</_name>
     <id>net.svg2shenzhen.export.layers</id>
     <dependency type="executable" location="extensions">export_layers.py</dependency>
 	<param name="help" type="description">Export Drawing to Kicad PCB Format</param>

@@ -17,11 +17,7 @@ class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
-        self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
-        self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
-        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
-        self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
+        self.OptionParser.add_option("--docwidth", action="store", type="float", dest="docwidth", default=0.0)
 
         self.bb_width_center = 0
         self.bb_height_center = 0
@@ -50,23 +46,17 @@ class PNGExport(inkex.Effect):
         self.bb_scaling = viewbox_h/height
 
 
-    def setDocumentSquare(self):
+    def setDocumentSquare(self, width):
         root = self.document.getroot()
-        height = float(root.attrib['height'].replace("mm", ""))
-        width =  float(root.attrib['width'].replace("mm", ""))
-
-        if (width > height):
-            root.attrib['height'] = str(width) + "mm"
-            root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
-        else:
-            root.attrib['width'] = str(height) + "mm"
-            root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
+        # height = float(root.attrib['height'].replace("mm", ""))
+        # width =  float(root.attrib['width'].replace("mm", ""))
+        root.attrib['width'] = str(width) + "mm"
+        root.attrib['height'] = str(width) + "mm"
+        root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
             
 
     def createLayer(self, layer_name):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
-        height = float(svg.attrib['height'].replace("mm", ""))
-        width =  float(svg.attrib['width'].replace("mm", ""))
         layer = inkex.etree.SubElement(svg, 'g')
         layer.set(inkex.addNS('label', 'inkscape'), '%s' % layer_name)
         layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
@@ -83,27 +73,50 @@ class PNGExport(inkex.Effect):
         layer.append(rect)
 
     def prepareDocument(self):
-        layer = self.createLayer("[fixed] BG")
-        layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
-        self.createWhitebg(layer)
-        self.createLayer("Edge.Cuts")                     
-        self.createLayer("B.Cu-disabled")
-        self.createLayer("B.Mask-disabled")
-        self.createLayer("B.Silk-disabled")                        
-        self.createLayer("F.Cu")
-        self.createLayer("F.Mask-disabled")        
-        self.createLayer("F.Silk-disabled")   
-        self.createLayer("Drill")     
+        svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
+        layers = []
+
+        for layer in svg_layers:
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
+            layer_label = layer.attrib[label_attrib_name]
+            layers.append(layer_label)
+
+        if ("[fixed] BG" not in layers):
+            layer = self.createLayer("[fixed] BG") 
+            layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
+            self.createWhitebg(layer)
+
+        if ("Edge.Cuts" not in layers):
+            self.createLayer("Edge.Cuts") 
+
+        if ("Drill" not in layers):
+            self.createLayer("Drill") 
+
+        if ("B.Cu-disabled" not in layers and "B.Cu" not in layers):
+            self.createLayer("B.Cu-disabled") 
+
+        if ("B.Mask-disabled" not in layers and "B.Mask" not in layers):
+            self.createLayer("B.Mask-disabled") 
+
+        if ("B.Silk-disabled" not in layers and "B.Silk" not in layers):
+            self.createLayer("B.Silk-disabled") 
+
+        if ("F.Cu" not in layers and "F.Cu-disabled" not in layers):
+            self.createLayer("F.Cu") 
+
+        if ("F.Mask-disabled" not in layers and "F.Mask" not in layers):
+            self.createLayer("F.Mask-disabled") 
+
+        if ("F.Silk-disabled" not in layers and "F.Silk" not in layers):
+            self.createLayer("F.Silk-disabled") 
+                               
 
     def effect(self):
-        self.setDocumentSquare()
-        self.setInkscapeScaling()
-        
+        self.setDocumentSquare(self.options.docwidth)
+        self.setInkscapeScaling()        
         self.prepareDocument()
-        # self.exportDrill()
-        # self.exportEdgeCut()        
-        # self.createLayer("B.Cu_Test")
-        # self.createLayer("F.Masks_Test")
         
         
 
