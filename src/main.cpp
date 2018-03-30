@@ -125,7 +125,7 @@ void showUsage()
   cout<<" bitmap2component-cli "<<endl;
   cout<<"" << endl;
   cout<<" Usage"<<endl;
-  cout<<" ./bitmap2component <filename.png> <output filename> <negative|true/false> <threshold|0-255>"<<endl;
+  cout<<" ./bitmap2component <filename.png> <output filename> <layer> <negative|true/false> <threshold|0-255>"<<endl;
   cout<<"\n\n\n" << endl;
 }
 
@@ -137,21 +137,43 @@ int main(int argc, char* argv[])
     string image_filename;
     string output_filename;
 
+
+    BMP2CMP_MOD_LAYER kicad_output_layer;
+
     showUsage();
 
     image_filename = string(argv[1]);
     output_filename = string(argv[2]);
         
     if (argc > 3){
-        if (string(argv[3]) == "true" ){
+        string layer_name = string(argv[3]);
+        if (layer_name == "F.Cu" )
+            kicad_output_layer = MOD_LYR_FCU;
+        else if(layer_name == "B.Cu")
+            kicad_output_layer = MOD_LYR_BCU;
+        else if(layer_name == "F.Mask")
+            kicad_output_layer = MOD_LYR_FMASK;
+        else if(layer_name == "B.Mask")
+            kicad_output_layer = MOD_LYR_BMASK;      
+        else if(layer_name == "F.Silk")
+            kicad_output_layer = MOD_LYR_FSILKS;    
+        else if(layer_name == "B.Silk")
+            kicad_output_layer = MOD_LYR_BSILKS;                               
+        else
+            kicad_output_layer = MOD_LYR_FCU;
+    }
+
+
+    if (argc > 4){
+        if (string(argv[4]) == "true" ){
             negative = true;
         }else{
             negative = false;
         }
     }
 
-    if (argc > 4){
-        threshold = stoi(string(argv[4]));
+    if (argc > 5){
+        threshold = stoi(string(argv[5]));
     }    
 
     printf("[bitmap2component] Filename %s\n", image_filename.c_str());
@@ -217,7 +239,7 @@ int main(int argc, char* argv[])
    printf("[bitmap2component] Trace image\n");
 
    fprintf(pFile, pcb_header.c_str());
-   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, 600, 600, MOD_LYR_FCU );
+   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, 600, 600, kicad_output_layer );
    fprintf(pFile, pcb_footer.c_str());
 
 

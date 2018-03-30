@@ -119,6 +119,8 @@ pcb_footer = '''
 )
 '''
 
+identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
+
 
 class PNGExport(inkex.Effect):
     def __init__(self):
@@ -130,6 +132,9 @@ class PNGExport(inkex.Effect):
         self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
         self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
 
+        self.bb_width_center = 0
+        self.bb_height_center = 0
+        self.bb_scaling = 0
 
         self.layer_map = {
             #'inkscape-name' : kicad-name,
@@ -147,15 +152,45 @@ class PNGExport(inkex.Effect):
         }
 
 
+    def coordToKicad(self,XYCoord):	
+        return [
+            (XYCoord[0]-self.bb_width_center)/self.bb_scaling,
+            (XYCoord[1]-self.bb_height_center)/self.bb_scaling,
+        ]
+
+    def setInkscapeScaling(self):	
+
+        root = self.document.getroot()
+        height = float(self.document.getroot().get('height').replace("mm", ""))
+        width = float(self.document.getroot().get('width').replace("mm", ""))
+        
+        viewbox = root.attrib['viewBox'].split(' ')
+        viewbox_h = float(viewbox[-1])
+        viewbox_w = float(viewbox[-2])
+
+        self.bb_width_center = viewbox_w/2
+        self.bb_height_center = viewbox_h/2	
+        self.bb_scaling = viewbox_h/height
+
+    def setDocumentSquare(self):
+        root = self.document.getroot()
+        height = float(root.attrib['height'].replace("mm", ""))
+        width =  float(root.attrib['width'].replace("mm", ""))
+
+        if (width > height):
+            root.attrib['height'] = str(width) + "mm"
+        else:
+            root.attrib['width'] = str(height) + "mm"
+
     def effect(self):
-        # /Users/xcorex/Library/Application Support/org.inkscape.Inkscape/inkscape/extensions
-        # inkex.debug(os.path.dirname(os.path.abspath(__file__)) + "/" )
-        # inkex.debug(self.where)
 
         output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
         counter = 1
+
+        self.setDocumentSquare()
+        self.setInkscapeScaling()
 
         for (layer_id, layer_label, layer_type) in layers:
             if layer_type == "fixed":
@@ -177,7 +212,7 @@ class PNGExport(inkex.Effect):
 
                         self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
                         layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_pcb" % (str(counter).zfill(3), layer_label))
-                        self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path )
+                        self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label )
 
                         # layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
                         # self.convertPngToJpg(fp_png.name, layer_dest_jpg_path)
@@ -235,10 +270,10 @@ class PNGExport(inkex.Effect):
         return layers
 
 
-    def exportToKicad(self, png_path, output_path):
+    def exportToKicad(self, png_path, output_path, layer_type):
         plugin_path = os.path.dirname(os.path.abspath(__file__)) + "/"
         area_param = '-D' if self.options.crop else 'C'
-        command =  "\"%sbitmap2component\" \"%s\" \"%s\" %s %s" % (plugin_path, png_path, output_path, "true" , str(int(self.options.threshold)))
+        command =  "\"%sbitmap2component\" \"%s\" \"%s\" %s %s %s" % (plugin_path, png_path, output_path, layer_type, "true" , str(int(self.options.threshold)))
         inkex.debug(command)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
