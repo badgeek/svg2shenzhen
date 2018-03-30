@@ -227,12 +227,29 @@ const char* BITMAPCONV_INFO::getBrdLayerName( BMP2CMP_MOD_LAYER aChoice )
         break;
 
     case MOD_LYR_ECO1:
-        layerName = "F.Cu";
+        layerName = "Eco1.User";
         break;
 
     case MOD_LYR_ECO2:
+        layerName = "Eco2.User";
+        break;
+
+    case MOD_LYR_FCU:
         layerName = "B.Cu";
         break;
+
+    case MOD_LYR_BCU:
+        layerName = "B.Cu";
+        break;
+
+    case MOD_LYR_FMASK:
+        layerName = "B.Mask";
+        break;                
+
+    case MOD_LYR_BMASK:
+        layerName = "B.Mask";
+        break;                
+
 
     case MOD_LYR_FSILKS:
     default:    // case MOD_LYR_FSILKS only unless there is a bug
