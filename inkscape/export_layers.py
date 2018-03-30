@@ -286,6 +286,106 @@ class PNGExport(inkex.Effect):
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
 
+
+    def exportEdgeCut(self):
+        x0 = 0
+        y0 = 0
+        mirror = 1.0
+
+        self.makeDocumentSquare()
+        self.setInkscapeScaling()
+
+        i = 0
+        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
+        for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
+            i += 1
+
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
+            
+            layer_name = (layer.attrib[label_attrib_name])
+
+            if layer_name != "Edge.Cut":
+                continue
+
+            layer_trans = layer.get('transform')
+            if layer_trans:
+                layer_m = simpletransform.parseTransform(layer_trans)
+            else:
+                layer_m = identity_m
+            
+            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
+            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+                d = node.get('d')
+                p = simplepath.parsePath(d)
+
+                points = []
+                if p:
+                    #sanity check
+                    if p[0][0] == 'M':
+                        t = node.get('transform')
+                        if t:
+                            m = simpletransform.parseTransform(t)
+                            trans = simpletransform.composeTransform(layer_m, m)
+                        else:
+                            trans = layer_m
+
+                        for path in p:
+                            if path[0] != "Z":
+                                x = (path[1][0])
+                                y = (path[1][1])
+                                xy = [x,y]
+                                simpletransform.applyTransformToPoint(trans,xy)
+                                points.append(self.coordToKicad([(xy[0]-x0), xy[1]*mirror-y0]))
+
+                        points_count = len(points)
+                        points.append(points[0])
+
+                        for x in range (0, points_count):
+                            inkex.debug("(gr_line (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))"  % (points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
+
+
+    def exportDrill(self):
+        x0 = 0
+        y0 = 0
+        mirror = 1.0
+
+        self.setInkscapeScaling()
+
+        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
+        for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
+            
+            layer_name = (layer.attrib[label_attrib_name])
+
+            layer_trans = layer.get('transform')
+            if layer_trans:
+                layer_m = simpletransform.parseTransform(layer_trans)
+            else:
+                layer_m = identity_m
+            
+            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:circle') % i
+            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+                cx = float(node.get('cx'))
+                cy = float(node.get('cy'))
+                t = node.get('transform')
+
+                pt = [cx, cy]
+
+                if t:
+                    m = simpletransform.parseTransform(t)
+                    trans = simpletransform.composeTransform(layer_m, m)
+                else:
+                    trans = layer_m
+
+                simpletransform.applyTransformToPoint(trans,pt)
+                padCoord = self.coordToKicad(pt)
+
+                inkex.debug("(pad %d thru_hole circle (at %f %f) (size 1.524 1.524) (drill 0.762) (layers *.Cu *.Mask))" % (1, padCoord[0], padCoord[1]))
+        
     def convertPngToJpg(self, png_path, output_path):
         command = "convert \"%s\" \"%s\"" % (png_path, output_path)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
