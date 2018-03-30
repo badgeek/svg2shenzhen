@@ -8,7 +8,7 @@ TODO
 
 ## Install
 
-Download [svg2shenzhen](https://github.com/badgeek/svg2shenzhen-next/releases/download/0.2/svg2shenzhen-extension.zip) extension
+Download [svg2shenzhen-extension.zip](https://github.com/badgeek/svg2shenzhen-next/releases/download/0.2/svg2shenzhen-extension.zip)
 
 Extract and copy the files into the directory indicated in Edit -> Preferences -> System: User extensions
 
