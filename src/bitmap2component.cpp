@@ -235,7 +235,7 @@ const char* BITMAPCONV_INFO::getBrdLayerName( BMP2CMP_MOD_LAYER aChoice )
         break;
 
     case MOD_LYR_FCU:
-        layerName = "B.Cu";
+        layerName = "F.Cu";
         break;
 
     case MOD_LYR_BCU:

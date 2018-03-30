@@ -216,9 +216,9 @@ int main(int argc, char* argv[])
 
    printf("[bitmap2component] Trace image\n");
 
-//    fprintf(pFile, pcb_header.c_str());
-   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, 600, 600, MOD_LYR_ECO1 );
-//    fprintf(pFile, pcb_footer.c_str());
+   fprintf(pFile, pcb_header.c_str());
+   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, 600, 600, MOD_LYR_FCU );
+   fprintf(pFile, pcb_footer.c_str());
 
 
    fclose( pFile );
