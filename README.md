@@ -21,6 +21,15 @@ Extract and copy the files into the directory indicated in Edit -> Preferences -
 
 Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2shenzhen-next/master/examples/viruspcb.svg)
 
+## Tips
+
+1. For Edge.Cut Layer, polygon or object need to be converted to path without fill and only outline, make sure nodes also converted into straight lines
+2. For Drill layer, place Circle object and it will be converted into drill pad in kicad
+
+## Known Bugs
+
+The port of bitmap2component does not support non square image input, this issue tackled in prepare document by setting the document to square
+
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
 * bitmap2component (kicad) - https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component
