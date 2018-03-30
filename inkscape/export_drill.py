@@ -9,6 +9,7 @@ import tempfile
 import shutil
 import copy
 import simplepath, simpletransform
+from simplestyle import *
 
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
@@ -42,6 +43,8 @@ class PNGExport(inkex.Effect):
         viewbox_h = float(viewbox[-1])
         viewbox_w = float(viewbox[-2])
 
+        self.doc_width = width
+        self.doc_height = height
         self.bb_width_center = viewbox_w/2
         self.bb_height_center = viewbox_h/2	
         self.bb_scaling = viewbox_h/height
@@ -98,8 +101,13 @@ class PNGExport(inkex.Effect):
 
         if (width > height):
             root.attrib['height'] = str(width) + "mm"
+            root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
         else:
             root.attrib['width'] = str(height) + "mm"
+            root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
+
+        
+            
         
 
     def exportEdgeCut(self):
@@ -171,10 +179,51 @@ class PNGExport(inkex.Effect):
 
 
 
+    def createLayer(self, layer_name):
+        svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
+        height = float(svg.attrib['height'].replace("mm", ""))
+        width =  float(svg.attrib['width'].replace("mm", ""))
+        layer = inkex.etree.SubElement(svg, 'g')
+        layer.set(inkex.addNS('label', 'inkscape'), '%s' % layer_name)
+        layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
+        return layer
+
+    def createWhitebg(self, layer):
+        rect = inkex.etree.Element(inkex.addNS('rect','svg'))
+        rect.set('x', "0")
+        rect.set('y', "0")
+        rect.set('width', str(self.doc_width/self.bb_scaling))
+        rect.set('height', str(self.doc_height/self.bb_scaling))
+        style = {'fill' : '#FFFFFF', 'fill-opacity' : '1', 'stroke': 'none'}
+        rect.set('style', formatStyle(style))
+        layer.append(rect)
+
+    def prepareDocument(self):
+        layer = self.createLayer("[fixed] BG")
+        layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
+        self.createWhitebg(layer)
+        self.createLayer("Edge.Cuts")                     
+        self.createLayer("B.Cu-disabled")
+        self.createLayer("B.Mask-disabled")
+        self.createLayer("B.SilkS-disabled")                        
+        self.createLayer("F.Cu")
+        self.createLayer("F.Mask-disabled")        
+        self.createLayer("F.SilkS-disabled")   
+        self.createLayer("Drill")     
 
     def effect(self):
+        self.makeDocumentSquare()
+        self.setInkscapeScaling()
+        
+        self.prepareDocument()
         # self.exportDrill()
-        self.exportEdgeCut()
+        # self.exportEdgeCut()
+
+        
+        # self.createLayer("B.Cu_Test")
+        # self.createLayer("F.Masks_Test")
+        
+        
 
     def export_layers(self, dest, show):
         """

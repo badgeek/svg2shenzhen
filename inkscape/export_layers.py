@@ -132,6 +132,10 @@ class PNGExport(inkex.Effect):
         self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
         self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
 
+
+        self.doc_width = 0
+        self.doc_height = 0
+
         self.bb_width_center = 0
         self.bb_height_center = 0
         self.bb_scaling = 0
@@ -140,15 +144,15 @@ class PNGExport(inkex.Effect):
             #'inkscape-name' : kicad-name,
             'F.Cu' :    "F.Cu",
             'B.Cu' :    "B.Cu",				
-            'Adhes' : "{}.Adhes",
-            'Paste' : "{}.Paste",
+            # 'Adhes' : "{}.Adhes",
+            # 'Paste' : "{}.Paste",
             'F.SilkS' : "F.SilkS",
             'B.SilkS' : "B.SilkS",				
             'F.Mask' :  "F.Mask",
             'B.Mask' :  "B.Mask",				
-            'CrtYd' : "{}.CrtYd",
-            'Fab' :   "{}.Fab",
-            'Edge.Cuts' : "Edge.Cuts"
+            # 'CrtYd' : "{}.CrtYd",
+            # 'Fab' :   "{}.Fab",
+            # 'Edge.Cuts' : "Edge.Cuts"
         }
 
 
@@ -163,7 +167,10 @@ class PNGExport(inkex.Effect):
         root = self.document.getroot()
         height = float(self.document.getroot().get('height').replace("mm", ""))
         width = float(self.document.getroot().get('width').replace("mm", ""))
-        
+
+        self.doc_width = width
+        self.doc_height = height
+
         viewbox = root.attrib['viewBox'].split(' ')
         viewbox_h = float(viewbox[-1])
         viewbox_w = float(viewbox[-2])
@@ -182,15 +189,47 @@ class PNGExport(inkex.Effect):
         else:
             root.attrib['width'] = str(height) + "mm"
 
-    def effect(self):
+        root.attrib['viewbox'] = "0 0 %f %f" % (width, height)
+    
+    def createLayer(self, layer_name):
+        svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
+        layer = inkex.etree.SubElement(svg, 'g')
+        layer.set(inkex.addNS('label', 'inkscape'), '%s' % layer_name)
+        layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
 
+    def createWhitebg(self, layer):
+        rect = inkex.etree.Element(inkex.addNS('rect','svg'))
+        rect.set('x', "0")
+        rect.set('y', "0")
+        rect.set('width', str(self.doc_width/self.bb_scaling))
+        rect.set('height', str(self.doc_height/self.bb_scaling))
+        style = {'fill' : '#FFFFFF', 'fill-opacity' : '1', 'stroke': 'none'}
+        rect.set('style', formatStyle(style))
+        layer.append(rect)
+
+    def prepareDocument(self):
+        layer = self.createLayer("[fixed] BG")
+        layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
+        self.createWhitebg(layer)
+        self.createLayer("Edge.Cuts")                     
+        self.createLayer("B.Cu-disabled")
+        self.createLayer("B.Mask-disabled")
+        self.createLayer("B.SilkS-disabled")                        
+        self.createLayer("F.Cu")
+        self.createLayer("F.Mask-disabled")        
+        self.createLayer("F.SilkS-disabled")   
+        self.createLayer("Drill")   
+
+    def effect(self):
+        self.setDocumentSquare()
+        self.setInkscapeScaling()
+        self.processExportLayer()
+
+    def processExportLayer(self):
         output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
         counter = 1
-
-        self.setDocumentSquare()
-        self.setInkscapeScaling()
 
         for (layer_id, layer_label, layer_type) in layers:
             if layer_type == "fixed":
@@ -214,8 +253,6 @@ class PNGExport(inkex.Effect):
                         layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_pcb" % (str(counter).zfill(3), layer_label))
                         self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label )
 
-                        # layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
-                        # self.convertPngToJpg(fp_png.name, layer_dest_jpg_path)
                 elif self.options.filetype == "kicad_module":
                         inkex.debug("kicad_module not implemented")
 
