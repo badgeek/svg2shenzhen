@@ -231,6 +231,8 @@ class PNGExport(inkex.Effect):
         layers = self.get_layers(curfile)
         counter = 1
 
+        kicad_mod_files = []
+
         for (layer_id, layer_label, layer_type) in layers:
             if layer_type == "fixed":
                 continue
@@ -250,8 +252,11 @@ class PNGExport(inkex.Effect):
                         png_dest_kicad_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
 
                         self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
-                        layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_pcb" % (str(counter).zfill(3), layer_label))
+                        layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_module" % (str(counter).zfill(3), layer_label))
                         self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label )
+                        kicad_mod_files.append(layer_dest_kicad_path)
+
+            
 
                 elif self.options.filetype == "kicad_module":
                         inkex.debug("kicad_module not implemented")
@@ -261,6 +266,19 @@ class PNGExport(inkex.Effect):
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
 
             counter += 1
+        
+        kicad_modules_string = ""
+
+        for kicad_file in kicad_mod_files:
+            with open(kicad_file, 'r') as myfile:
+                kicad_modules_string = kicad_modules_string + myfile.read()
+
+        kicad_pcb_path = os.path.join(output_path, "compiled.kicad_pcb" )
+        with open(kicad_pcb_path, 'w') as the_file:
+            the_file.write(pcb_header)
+            the_file.write(kicad_modules_string)
+            the_file.write(pcb_footer)
+
 
     def export_layers(self, dest, show):
         """
@@ -291,7 +309,7 @@ class PNGExport(inkex.Effect):
             layer_label = layer.attrib[label_attrib_name]
 
             layer_label_name = layer_label
-            inkex.debug(layer_label_name)
+            # inkex.debug(layer_label_name)
 
             if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
