@@ -62,7 +62,7 @@ class PNGExport(inkex.Effect):
         layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
         return layer
 
-    def createWhitebg(self, layer):
+    def createWhitebg(self):
         rect = inkex.etree.Element(inkex.addNS('rect','svg'))
         rect.set('x', "0")
         rect.set('y', "0")
@@ -70,7 +70,7 @@ class PNGExport(inkex.Effect):
         rect.set('height', str(self.doc_height/self.bb_scaling))
         style = {'fill' : '#FFFFFF', 'fill-opacity' : '1', 'stroke': 'none'}
         rect.set('style', formatStyle(style))
-        layer.append(rect)
+        return rect
 
     def prepareDocument(self):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
@@ -84,9 +84,10 @@ class PNGExport(inkex.Effect):
             layers.append(layer_label)
 
         if ("[fixed] BG" not in layers):
-            layer = self.createLayer("[fixed] BG") 
-            layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
-            self.createWhitebg(layer)
+            white_layer = self.createLayer("[fixed] BG") 
+            white_layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
+            rect = self.createWhitebg()
+            white_layer.append(rect)            
 
         if ("Edge.Cuts" not in layers):
             self.createLayer("Edge.Cuts") 
