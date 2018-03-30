@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Export Kicad</_name>
+    <id>net.svg2shenzhen.export.layers</id>
+    <dependency type="executable" location="extensions">export_layers.py</dependency>
+	<param name="help" type="description">Export Drawing to Kicad PCB Format</param>
+    <param name="path" type="string"  _gui-text="Choose path to export">~/</param>
+    <param name="filetype" type="optiongroup" gui-text="Export layers as..." appearance="minimal">
+       <option selected="selected" value="kicad_pcb">KICAD - PCB</option>
+       <option value="kicad_module">KICAD - Module</option>       
+       <option value="png">PNG - Image</option>
+    </param>
+    <param name="crop" type="boolean" _gui-text="Crop to drawn bounds?">false</param>
+    <param name="threshold" type="float" min="0.0" max="255.0" _gui-text="Threshold (128)">128</param>    
+    <param name="dpi" type="float" min="0.0" max="1000.0" _gui-text="Export DPI (600)">600</param>
+    <effect needs-live-preview="false">
+        <object-type>all</object-type>
+        <effects-menu _name="Export Kicad">
+            <submenu _name="Svg2Shenzhen" />
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">export_layers.py</command>
+    </script>
+</inkscape-extension>
