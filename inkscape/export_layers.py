@@ -148,8 +148,8 @@ class PNGExport(inkex.Effect):
             'B.Cu' :    "B.Cu",				
             # 'Adhes' : "{}.Adhes",
             # 'Paste' : "{}.Paste",
-            'F.SilkS' : "F.SilkS",
-            'B.SilkS' : "B.SilkS",				
+            'F.Silk' : "F.Silk",
+            'B.Silk' : "B.Silk",				
             'F.Mask' :  "F.Mask",
             'B.Mask' :  "B.Mask",				
             # 'CrtYd' : "{}.CrtYd",
@@ -216,10 +216,10 @@ class PNGExport(inkex.Effect):
         self.createLayer("Edge.Cuts")                     
         self.createLayer("B.Cu-disabled")
         self.createLayer("B.Mask-disabled")
-        self.createLayer("B.SilkS-disabled")                        
+        self.createLayer("B.Silk-disabled")                        
         self.createLayer("F.Cu")
         self.createLayer("F.Mask-disabled")        
-        self.createLayer("F.SilkS-disabled")   
+        self.createLayer("F.Silk-disabled")   
         self.createLayer("Drill")   
 
     def effect(self):

@@ -205,10 +205,10 @@ class PNGExport(inkex.Effect):
         self.createLayer("Edge.Cuts")                     
         self.createLayer("B.Cu-disabled")
         self.createLayer("B.Mask-disabled")
-        self.createLayer("B.SilkS-disabled")                        
+        self.createLayer("B.Silk-disabled")                        
         self.createLayer("F.Cu")
         self.createLayer("F.Mask-disabled")        
-        self.createLayer("F.SilkS-disabled")   
+        self.createLayer("F.Silk-disabled")   
         self.createLayer("Drill")     
 
     def effect(self):
