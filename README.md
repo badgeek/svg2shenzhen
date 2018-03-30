@@ -11,10 +11,10 @@ Copy the *.py and *.inx files into the directory indicated in Edit -> Preference
 
 ## How to
 
-1.Extension > Svg2Shenzhen > Prepare Document
-2.Choose layer (F.Cu.. etc)
-3.Draw PCB 
-4.Extension > Svg2Shenzhen > Export Kicad
+    1.Extension > Svg2Shenzhen > Prepare Document
+    2.Choose layer (F.Cu.. etc)
+    3.Draw PCB 
+    4.Extension > Svg2Shenzhen > Export Kicad
 
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
