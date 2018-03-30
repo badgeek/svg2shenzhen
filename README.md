@@ -19,6 +19,8 @@ Extract and copy the files into the directory indicated in Edit -> Preferences -
     3.Draw PCB 
     4.Extension > Svg2Shenzhen > Export Kicad
 
+Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2shenzhen-next/master/examples/viruspcb.svg)
+
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
 * bitmap2component (kicad) - https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component
