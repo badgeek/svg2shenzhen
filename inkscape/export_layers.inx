@@ -10,7 +10,6 @@
        <option value="kicad_module">KICAD - Module</option>       
        <option value="png">PNG - Image</option>
     </param>
-    <param name="crop" type="boolean" _gui-text="Crop to drawn bounds?">false</param>
     <param name="threshold" type="float" min="0.0" max="255.0" _gui-text="Threshold (128)">128</param>    
     <param name="dpi" type="float" min="0.0" max="1000.0" _gui-text="Export DPI (600)">600</param>
     <effect needs-live-preview="false">
