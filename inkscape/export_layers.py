@@ -226,7 +226,7 @@ class PNGExport(inkex.Effect):
         self.setDocumentSquare()
         self.setInkscapeScaling()
         self.processExportLayer()
-        # inkex.debug(self.exportEdgeCut())
+        # inkex.debug(self.exportDrill())
 
     def processExportLayer(self):
         output_path = os.path.expanduser(self.options.path)
@@ -272,6 +272,7 @@ class PNGExport(inkex.Effect):
         
 
         kicad_edgecut_string = self.exportEdgeCut()
+        kicad_drill_string = self.exportDrill()
         kicad_modules_string = ""
 
         for kicad_file in kicad_mod_files:
@@ -283,6 +284,7 @@ class PNGExport(inkex.Effect):
             the_file.write(pcb_header)
             the_file.write(kicad_modules_string)
             the_file.write(kicad_edgecut_string)
+            the_file.write(kicad_drill_string)
             the_file.write(pcb_footer)
 
 
@@ -414,13 +416,29 @@ class PNGExport(inkex.Effect):
 
         self.setInkscapeScaling()
 
+        kicad_drill_string = ""
+
+        i = 0
+
+        pad_template = """
+            (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
+                (at %f %f)
+                (pad %d thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill 0.8001) (layers *.Cu *.Mask))
+            )
+        """
+
         layerPath = '//svg:g[@inkscape:groupmode="layer"]'
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
             label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
             if label_attrib_name not in layer.attrib:
                 continue
-            
+            i += 1
+
             layer_name = (layer.attrib[label_attrib_name])
+
+            if layer_name != "Drill":
+                continue
+
 
             layer_trans = layer.get('transform')
             if layer_trans:
@@ -445,7 +463,12 @@ class PNGExport(inkex.Effect):
                 simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
-                inkex.debug("(pad %d thru_hole circle (at %f %f) (size 1.524 1.524) (drill 0.762) (layers *.Cu *.Mask))" % (1, padCoord[0], padCoord[1]))
+
+
+
+                kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], 1))
+            
+            return kicad_drill_string
         
     def convertPngToJpg(self, png_path, output_path):
         command = "convert \"%s\" \"%s\"" % (png_path, output_path)
