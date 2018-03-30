@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 import shutil
 import copy
-
+import platform
 import simplepath, simpletransform
 from simplestyle import *
 
@@ -334,8 +334,17 @@ class PNGExport(inkex.Effect):
 
 
     def exportToKicad(self, png_path, output_path, layer_type):
-        plugin_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-        bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component')
+        plugin_path = os.path.dirname(os.path.abspath(__file__))
+
+        platform_system = platform.system() 
+
+        if (platform_system == 'Darwin'):
+            bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component_osx')
+        elif (platform_system == 'Linux'):
+            bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component_linux64')
+        else:
+            bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
+
         command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, "true" , str(int(self.options.threshold)))
         inkex.debug(command)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
