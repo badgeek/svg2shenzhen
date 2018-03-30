@@ -245,30 +245,29 @@ class PNGExport(inkex.Effect):
             if not os.path.exists(os.path.join(output_path)):
                 os.makedirs(os.path.join(output_path))
 
-            with tempfile.NamedTemporaryFile() as fp_svg:
-                layer_dest_svg_path = fp_svg.name
-                self.export_layers(layer_dest_svg_path, show_layer_ids)
 
+            fd, layer_dest_svg_path = tempfile.mkstemp()
+            try:
+                with open(layer_dest_svg_path, 'w') as f:
+                    self.export_layers(layer_dest_svg_path, show_layer_ids)
+                # close the file descriptor
+                os.close(fd)
                 if self.options.filetype == "kicad_pcb":
-                    with tempfile.NamedTemporaryFile() as fp_png:
-
-                        png_dest_kicad_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
-
-                        self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
-                        layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_module" % (str(counter).zfill(3), layer_label))
-                        self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label )
-                        kicad_mod_files.append(layer_dest_kicad_path)
-
-            
-
+                    png_dest_kicad_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
+                    self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
+                    layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_module" % (str(counter).zfill(3), layer_label))
+                    self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label )
+                    kicad_mod_files.append(layer_dest_kicad_path)
                 elif self.options.filetype == "kicad_module":
                         inkex.debug("kicad_module not implemented")
-
                 else:
                     layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+            finally:
+                print "ok"
+                # os.remove(layer_dest_svg_path)
 
-            counter += 1
+            counter = counter + 1
         
 
         kicad_edgecut_string = self.exportEdgeCut()
