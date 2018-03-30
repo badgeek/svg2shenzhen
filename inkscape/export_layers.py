@@ -327,8 +327,8 @@ class PNGExport(inkex.Effect):
 
     def exportToKicad(self, png_path, output_path, layer_type):
         plugin_path = os.path.dirname(os.path.abspath(__file__)) + "/"
-        area_param = '-D' if self.options.crop else 'C'
-        command =  "\"%sbitmap2component\" \"%s\" \"%s\" %s %s %s" % (plugin_path, png_path, output_path, layer_type, "true" , str(int(self.options.threshold)))
+        bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component')
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, "true" , str(int(self.options.threshold)))
         inkex.debug(command)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
