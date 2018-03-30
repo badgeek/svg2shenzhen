@@ -3,6 +3,9 @@ Inkscape extension for creating PCB
 
 TODO
 
+![screenshot_125](https://user-images.githubusercontent.com/64752/38157030-170a81a0-34ad-11e8-85df-667a642505d8.png)
+
+
 ## Install
 
 Download [svg2shenzhen](https://github.com/badgeek/svg2shenzhen-next/releases/download/0.2/svg2shenzhen-extension.zip) extension
