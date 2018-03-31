@@ -431,7 +431,7 @@ class PNGExport(inkex.Effect):
         pad_template = """
             (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
                 (at %f %f)
-                (pad %d thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill 0.8001) (layers *.Cu *.Mask))
+                (pad %d thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill %f) (layers *.Cu *.Mask))
             )
         """
 
@@ -455,9 +455,18 @@ class PNGExport(inkex.Effect):
                 layer_m = identity_m
             
             nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:circle') % i
+
+            count = 0
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+                count = count + 1
                 cx = float(node.get('cx'))
                 cy = float(node.get('cy'))
+
+                # if (node.get('rx') and node.get('ry')):
+                #     rx = float(node.get('rx'))
+                #     ry = float(node.get('ry'))
+
+                radius = float(node.get('r'))
                 t = node.get('transform')
 
                 pt = [cx, cy]
@@ -471,10 +480,7 @@ class PNGExport(inkex.Effect):
                 simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
-
-
-
-                kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], 1))
+                kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], count, 0.8001))
             
             return kicad_drill_string
         
