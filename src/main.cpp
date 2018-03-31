@@ -125,7 +125,7 @@ void showUsage()
   cout<<" bitmap2component-cli "<<endl;
   cout<<"" << endl;
   cout<<" Usage"<<endl;
-  cout<<" ./bitmap2component <filename.png> <output filename> <layer> <negative|true/false> <threshold|0-255>"<<endl;
+  cout<<" ./bitmap2component <filename.png> <output filename> <layer> <negative|true/false> <dpi> <threshold|0-255>"<<endl;
   cout<<"\n\n\n" << endl;
 }
 
@@ -134,6 +134,7 @@ int main(int argc, char* argv[])
 
     bool negative = false;
     int threshold = 128;
+    int dpi = 600;
     string image_filename;
     string output_filename;
 
@@ -141,6 +142,8 @@ int main(int argc, char* argv[])
     BMP2CMP_MOD_LAYER kicad_output_layer;
 
     showUsage();
+
+    if (argc == 1) return 0;
 
     image_filename = string(argv[1]);
     output_filename = string(argv[2]);
@@ -173,8 +176,12 @@ int main(int argc, char* argv[])
     }
 
     if (argc > 5){
-        threshold = stoi(string(argv[5]));
+        dpi = stoi(string(argv[5]));
     }    
+
+    if (argc > 6){
+        threshold = stoi(string(argv[6]));
+    }      
 
     printf("[bitmap2component] Filename %s\n", image_filename.c_str());
 
@@ -194,7 +201,7 @@ int main(int argc, char* argv[])
         std::cout << "[bitmap2component] Decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
         return -1;
     }else{
-        printf("[bitmap2component] Loaded png s: %i x %i\n", width, height);
+        printf("[bitmap2component] Loaded png: %i x %i\n", width, height);
     }
 	
    printf("[bitmap2component] Create bitmap\n");
@@ -236,10 +243,11 @@ int main(int argc, char* argv[])
         // printf("\n");
     }
 
+   printf("[bitmap2component] Trace Dpi: %i\n", dpi);
    printf("[bitmap2component] Trace image\n");
 
 //    fprintf(pFile, pcb_header.c_str());
-   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, 600, 600, kicad_output_layer );
+   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, dpi, dpi, kicad_output_layer );
 //    fprintf(pFile, pcb_footer.c_str());
 
 
