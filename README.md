@@ -1,5 +1,5 @@
 # Svg2Shenzhen
-Inkscape extension for creating PCB
+Inkscape extension for creating PCB using Kicad
 
 TODO
 
