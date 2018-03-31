@@ -244,7 +244,12 @@ class PNGExport(inkex.Effect):
 
             if not os.path.exists(os.path.join(output_path)):
                 os.makedirs(os.path.join(output_path))
-
+            
+            invert = "true"
+            
+            if ("-invert" in layer_label):
+                layer_label = layer_label.replace("-invert", "")
+                invert = "false"
 
             fd, layer_dest_svg_path = tempfile.mkstemp()
             try:
@@ -256,7 +261,7 @@ class PNGExport(inkex.Effect):
                     png_dest_kicad_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
                     layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_module" % (str(counter).zfill(3), layer_label))
-                    self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label )
+                    self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label, invert )
                     kicad_mod_files.append(layer_dest_kicad_path)
                 elif self.options.filetype == "kicad_module":
                         inkex.debug("kicad_module not implemented")
@@ -315,12 +320,12 @@ class PNGExport(inkex.Effect):
             layer_id = layer.attrib["id"]
             layer_label = layer.attrib[label_attrib_name]
 
-            layer_label_name = layer_label
+            layer_label_name = layer_label.replace("-invert", "")
             # inkex.debug(layer_label_name)
-
+            
             if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
-                layer_label = layer_label_name
+                layer_label = layer_label
             elif layer_label.lower().startswith("[fixed] "):
                 layer_type = "fixed"
                 layer_label = layer_label[8:]
@@ -332,7 +337,7 @@ class PNGExport(inkex.Effect):
         return layers
 
 
-    def exportToKicad(self, png_path, output_path, layer_type):
+    def exportToKicad(self, png_path, output_path, layer_type, invert = "true"):
         plugin_path = os.path.dirname(os.path.abspath(__file__))
 
         platform_system = platform.system() 
@@ -344,7 +349,7 @@ class PNGExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, "true" , str(int(self.options.threshold)))
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.threshold)))
         inkex.debug(command)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
