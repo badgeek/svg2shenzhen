@@ -10,6 +10,7 @@ TODO
 - Draw Any kind of shapes without restriction (unlike svg2mod)
 - Support Drill Pad
 - Support Edge CUt (PCB Shape)
+- Tested on OSX, and Windows and Linux
 
 ## Install
 
@@ -34,8 +35,6 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 ## Known Bugs
 
 - The port of bitmap2component does not support non square image input, this issue tackled in prepare document by setting the document to square
-- Tested on OSX, and Windows
-- Need Linux tester
 
 ## Reference
 
