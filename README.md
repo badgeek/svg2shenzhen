@@ -35,7 +35,7 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 ## Reference
 
 - [PCB Art with Inkscape - Developer log](http://wiki.8bitmixtape.cc/#/4_7.1-PCB-Art-with-Kicad-and-Inkscape) on 8BitMixtape Wiki 
-- [Practical Guide to Designing PCB Art](http://wiki.8bitmixtape.cc/h%20ttps://medium.com/@urish/a-practical-guide-to-designing-pcb-art-b5aa22926a5c)
+- [Practical Guide to Designing PCB Art](https://medium.com/@urish/a-practical-guide-to-designing-pcb-art-b5aa22926a5c)
 - [KitSprint ANORG 2018](http://wiki.sgmk-ssam.ch/wiki/KitSprint_ANORG_2018#Kicad_bitmap_import_for_Shenzhen_Ready)
 
 ## Buy me a Coffee
