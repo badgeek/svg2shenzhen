@@ -5,6 +5,11 @@ TODO
 
 ![screenshot_125](https://user-images.githubusercontent.com/64752/38157030-170a81a0-34ad-11e8-85df-667a642505d8.png)
 
+## Features
+
+- Draw Any kind of shapes without restriction (unlike svg2mod)
+- Support Drill Pad
+- Support Edge CUt (PCB Shape)
 
 ## Install
 
