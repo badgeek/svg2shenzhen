@@ -36,6 +36,10 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 - [PCB Art with Inkscape - Developer log](http://wiki.8bitmixtape.cc/#/4_7.1-PCB-Art-with-Kicad-and-Inkscape) on 8BitMixtape Wiki 
 
+## Buy me a Coffee
+
+- [Buy me Coffee - patreon](https://www.patreon.com/badgeek)
+
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
 * bitmap2component (kicad) - https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component
