@@ -32,6 +32,10 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 - Tested on OSX, and Windows
 - Need Linux tester
 
+## Reference
+
+- [PCB Art with Inkscape - Developer log](http://wiki.8bitmixtape.cc/#/4_7.1-PCB-Art-with-Kicad-and-Inkscape) on 8BitMixtape Wiki 
+
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
 * bitmap2component (kicad) - https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component
