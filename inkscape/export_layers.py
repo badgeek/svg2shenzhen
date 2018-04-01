@@ -349,7 +349,7 @@ class PNGExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         inkex.debug(command)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
