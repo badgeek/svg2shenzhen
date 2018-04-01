@@ -135,6 +135,7 @@ class PNGExport(inkex.Effect):
         self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=600)
         self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
         self.OptionParser.add_option("--openfactory", action="store", type="inkbool", dest="openfactory", default="true")
+        self.OptionParser.add_option("--openkicad", action="store", type="inkbool", dest="openkicad", default="true")
 
 
         self.doc_width = 0
@@ -228,6 +229,8 @@ class PNGExport(inkex.Effect):
         self.setDocumentSquare()
         self.setInkscapeScaling()
         self.processExportLayer()
+        if (self.options.openfactory):
+            webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
         # inkex.debug(self.exportDrill())
 
     def processExportLayer(self):
@@ -276,8 +279,6 @@ class PNGExport(inkex.Effect):
 
             counter = counter + 1
 
-        if (self.options.openfactory):
-            webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
         
 
         kicad_edgecut_string = self.exportEdgeCut()
@@ -296,7 +297,9 @@ class PNGExport(inkex.Effect):
             the_file.write(kicad_drill_string)
             the_file.write(pcb_footer)
 
-
+        if (self.options.openkicad):
+            self.openKicad(kicad_pcb_path)
+        
     def export_layers(self, dest, show):
         """
         Export selected layers of SVG to the file `dest`.
@@ -340,6 +343,20 @@ class PNGExport(inkex.Effect):
             layers.append([layer_id, layer_label, layer_type])
 
         return layers
+
+    def openKicad(self, kicad_file_path):
+        platform_system = platform.system() 
+
+        if (platform_system == 'Darwin'):
+            command = "open %s" % (kicad_file_path)
+        elif (platform_system == 'Linux'):
+            command = "xda-open %s" % (kicad_file_path)
+        else:
+            command = "start %s" % (kicad_file_path)
+
+        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p.wait()
+
 
 
     def exportToKicad(self, png_path, output_path, layer_type, invert = "true"):
