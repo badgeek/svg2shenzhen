@@ -131,7 +131,7 @@ class PNGExport(inkex.Effect):
         self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
         self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
         self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
-        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
+        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=600)
         self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
 
 
@@ -246,7 +246,7 @@ class PNGExport(inkex.Effect):
                 os.makedirs(os.path.join(output_path))
             
             invert = "true"
-            
+
             if ("-invert" in layer_label):
                 layer_label = layer_label.replace("-invert", "")
                 invert = "false"
@@ -349,7 +349,7 @@ class PNGExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.threshold)))
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         inkex.debug(command)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
