@@ -274,8 +274,8 @@ class PNGExport(inkex.Effect):
                     layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
             finally:
-                print "ok"
-                # os.remove(layer_dest_svg_path)
+                # print "ok"
+                os.remove(layer_dest_svg_path)
 
             counter = counter + 1
 
