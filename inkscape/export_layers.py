@@ -11,6 +11,7 @@ import copy
 import platform
 import simplepath, simpletransform
 from simplestyle import *
+import webbrowser
 
 pcb_header = '''
 (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -133,6 +134,7 @@ class PNGExport(inkex.Effect):
         self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
         self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=600)
         self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
+        self.OptionParser.add_option("--openfactory", action="store", type="inkbool", dest="openfactory", default="true")
 
 
         self.doc_width = 0
@@ -273,6 +275,9 @@ class PNGExport(inkex.Effect):
                 # os.remove(layer_dest_svg_path)
 
             counter = counter + 1
+
+        if (self.options.openfactory):
+            webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
         
 
         kicad_edgecut_string = self.exportEdgeCut()
@@ -482,10 +487,15 @@ class PNGExport(inkex.Effect):
                 else:
                     trans = layer_m
 
+                drill_size = node.get('drill')
+
+                if (not drill_size):
+                    drill_size = 0.8001
+
                 simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
-                kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], count, 0.8001))
+                kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], count, float(drill_size) ))
             
             return kicad_drill_string
         

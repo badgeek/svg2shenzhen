@@ -12,6 +12,9 @@
     </param>
     <param name="threshold" type="int" min="0" max="255" _gui-text="Threshold (default: 128)">128</param>    
     <param name="dpi" type="int" min="0" max="2000" _gui-text="Export DPI (default: 600)">600</param>
+
+    <param name="openfactory" type="boolean" gui-text="Open PCBWay after export?">true</param>
+
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu _name="Export Kicad">
