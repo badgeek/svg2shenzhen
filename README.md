@@ -8,8 +8,8 @@ TODO
 ## Features
 
 - Draw Any kind of shapes without restriction (unlike svg2mod)
-- Support Drill Pad
-- Support Edge CUt (PCB Shape)
+- Support Drill Pad, and custom drill size
+- Support Edge Cut (PCB Shape)
 - Tested on OSX, and Windows and Linux
 
 ## Install
