@@ -12,7 +12,6 @@ class MyEffect(inkex.Effect):
     def effect(self):
         for id, node in self.selected.iteritems():
             if node.tag == inkex.addNS('circle','svg'):
-                inkex.debug(node)
                 node.set('drill', str(self.options.drillsize))
                 node.set('r', str(self.options.drillsize))
 
