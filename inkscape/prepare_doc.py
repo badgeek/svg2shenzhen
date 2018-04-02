@@ -113,12 +113,26 @@ class PNGExport(inkex.Effect):
         if ("Drill" not in layers):
             self.createLayer("Drill") 
 
+    def setDocumentGrid(self):
+        doc_view = self.document.xpath('//sodipodi:namedview',namespaces=inkex.NSS)[0]
+        doc_view.attrib['borderlayer'] = "true"
+        doc_view.attrib['showgrid'] = "true"
+
+        grid = inkex.etree.Element(inkex.addNS('grid','inkscape'))
+        grid.set('spacingx', '2.54')
+        grid.set('spacingy', '2.54')
+        grid.set('empspacing', '1')
+        grid.set('type', 'xygrid')
+        grid.set('units', 'mm')
+
+        doc_view.append(grid)
+
     def effect(self):
         self.setDocumentSquare(self.options.docwidth)
         self.setInkscapeScaling()        
         self.prepareDocument()
-        
-        
+        self.setDocumentGrid()
+
 
     def export_layers(self, dest, show):
         """
