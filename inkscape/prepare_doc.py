@@ -92,9 +92,6 @@ class PNGExport(inkex.Effect):
         if ("Edge.Cuts" not in layers):
             self.createLayer("Edge.Cuts") 
 
-        if ("Drill" not in layers):
-            self.createLayer("Drill") 
-
         if ("B.Cu-disabled" not in layers and "B.Cu" not in layers):
             self.createLayer("B.Cu-disabled") 
 
@@ -113,6 +110,8 @@ class PNGExport(inkex.Effect):
         if ("F.Silk-disabled" not in layers and "F.Silk" not in layers):
             self.createLayer("F.Silk-disabled") 
                                
+        if ("Drill" not in layers):
+            self.createLayer("Drill") 
 
     def effect(self):
         self.setDocumentSquare(self.options.docwidth)
