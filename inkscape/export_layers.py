@@ -122,6 +122,75 @@ pcb_footer = '''
 )
 '''
 
+pcb_lib_table = '''
+(fp_lib_table
+  (lib (name pcbart)(type KiCad)(uri "$(KIPRJMOD)/%s")(options "")(descr ""))
+)
+'''
+
+pcb_project_file = '''
+update=2018 March 15, Thursday 14:41:19
+version=1
+last_client=kicad
+[pcbnew]
+version=1
+LastNetListRead=
+UseCmpFile=1
+PadDrill=0.600000000000
+PadDrillOvalY=0.600000000000
+PadSizeH=1.500000000000
+PadSizeV=1.500000000000
+PcbTextSizeV=1.500000000000
+PcbTextSizeH=1.500000000000
+PcbTextThickness=0.300000000000
+ModuleTextSizeV=1.000000000000
+ModuleTextSizeH=1.000000000000
+ModuleTextSizeThickness=0.150000000000
+SolderMaskClearance=0.000000000000
+SolderMaskMinWidth=0.000000000000
+DrawSegmentWidth=0.200000000000
+BoardOutlineThickness=0.100000000000
+ModuleOutlineThickness=0.150000000000
+[cvpcb]
+version=1
+NetIExt=net
+[general]
+version=1
+[eeschema]
+version=1
+LibDir=
+[eeschema/libraries]
+LibName1=power
+LibName2=device
+LibName3=transistors
+LibName4=conn
+LibName5=linear
+LibName6=regul
+LibName7=74xx
+LibName8=cmos4000
+LibName9=adc-dac
+LibName10=memory
+LibName11=xilinx
+LibName12=microcontrollers
+LibName13=dsp
+LibName14=microchip
+LibName15=analog_switches
+LibName16=motorola
+LibName17=texas
+LibName18=intel
+LibName19=audio
+LibName20=interface
+LibName21=digital-audio
+LibName22=philips
+LibName23=display
+LibName24=cypress
+LibName25=siliconi
+LibName26=opto
+LibName27=atmel
+LibName28=contrib
+LibName29=valves
+'''
+
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 
@@ -159,6 +228,12 @@ class PNGExport(inkex.Effect):
             # 'Fab' :   "{}.Fab",
             # 'Edge.Cuts' : "Edge.Cuts"
         }
+
+        self.library_folder = "pcbart.pretty"
+        self.library_table_file = "fp-lib-table"
+        self.kicad_project_file = "pcbart.pro"
+        self.kicad_pcb_file = "pcbart.kicad_pcb"
+        self.export_image_folder = "images"
 
 
     def coordToKicad(self,XYCoord):	
@@ -241,14 +316,25 @@ class PNGExport(inkex.Effect):
 
         kicad_mod_files = []
 
+        #create pcb folder
+        if not os.path.exists(os.path.join(output_path)):
+            os.makedirs(os.path.join(output_path))        
+        
+        #create library folder
+        if not os.path.exists(os.path.join(output_path, self.library_folder)):
+            os.makedirs(os.path.join(output_path, self.library_folder))        
+
+        #create images folder
+        if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
+            os.makedirs(os.path.join(output_path, self.export_image_folder))        
+
+
         for (layer_id, layer_label, layer_type) in layers:
             if layer_type == "fixed":
                 continue
 
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
 
-            if not os.path.exists(os.path.join(output_path)):
-                os.makedirs(os.path.join(output_path))
             
             invert = "true"
 
@@ -262,11 +348,16 @@ class PNGExport(inkex.Effect):
                     self.export_layers(layer_dest_svg_path, show_layer_ids)
                 # close the file descriptor
                 os.close(fd)
-                if self.options.filetype == "kicad_pcb":
-                    png_dest_kicad_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
+                if self.options.filetype == "kicad_pcb":                    
+                    #path for exported png
+                    png_dest_kicad_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (str(counter).zfill(3), layer_label))
+                    #path for exported kicad
+                    layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (str(counter).zfill(3), layer_label))
+                    #export layer to png
                     self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
-                    layer_dest_kicad_path = os.path.join(output_path, "%s_%s.kicad_module" % (str(counter).zfill(3), layer_label))
+                    #export layer png to kicad
                     self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label, invert )
+                    #collect kicad file path
                     kicad_mod_files.append(layer_dest_kicad_path)
                 elif self.options.filetype == "kicad_module":
                         inkex.debug("kicad_module not implemented")
@@ -274,12 +365,9 @@ class PNGExport(inkex.Effect):
                     layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
             finally:
-                # print "ok"
                 os.remove(layer_dest_svg_path)
 
             counter = counter + 1
-
-        
 
         kicad_edgecut_string = self.exportEdgeCut()
         kicad_drill_string = self.exportDrill()
@@ -289,13 +377,23 @@ class PNGExport(inkex.Effect):
             with open(kicad_file, 'r') as myfile:
                 kicad_modules_string = kicad_modules_string + myfile.read()
 
-        kicad_pcb_path = os.path.join(output_path, "compiled.kicad_pcb" )
+        kicad_pcb_path = os.path.join(output_path, self.kicad_pcb_file )
+        kicad_lib_path = os.path.join(output_path, self.library_table_file )
+        kicad_pro_path = os.path.join(output_path, self.kicad_project_file )
+
         with open(kicad_pcb_path, 'w') as the_file:
             the_file.write(pcb_header)
             the_file.write(kicad_modules_string)
             the_file.write(kicad_edgecut_string)
             the_file.write(kicad_drill_string)
             the_file.write(pcb_footer)
+
+        with open(kicad_lib_path, 'w') as the_file:
+            the_file.write(pcb_lib_table % (self.library_folder))
+            
+        with open(kicad_pro_path, 'w') as the_file:
+            the_file.write(pcb_project_file)
+                        
 
         if (self.options.openkicad):
             self.openKicad(kicad_pcb_path)
