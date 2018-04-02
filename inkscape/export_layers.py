@@ -646,7 +646,7 @@ class PNGExport(inkex.Effect):
             count = 0
 
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                inkex.debug(node)
+                # inkex.debug(node)
                 if node.tag == inkex.addNS('path','svg'):
                     d = node.get('d')
                     p = cubicsuperpath.parsePath(d)
