@@ -9,9 +9,13 @@ import tempfile
 import shutil
 import copy
 import platform
-import simplepath, simpletransform
+import simplepath
+import simpletransform
 from simplestyle import *
+import cubicsuperpath
+import cspsubdiv
 import webbrowser
+
 
 pcb_header = '''
 (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -205,6 +209,7 @@ class PNGExport(inkex.Effect):
         self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
         self.OptionParser.add_option("--openfactory", action="store", type="inkbool", dest="openfactory", default="true")
         self.OptionParser.add_option("--openkicad", action="store", type="inkbool", dest="openkicad", default="true")
+        self.OptionParser.add_option("--autoflatten", action="store", type="inkbool", dest="autoflatten", default="true")
 
 
         self.doc_width = 0
@@ -492,6 +497,10 @@ class PNGExport(inkex.Effect):
 
         i = 0
         layerPath = '//svg:g[@inkscape:groupmode="layer"]'
+
+        if (self.options.autoflatten):
+            self.flatten_bezier()
+
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
             i += 1
 
@@ -619,6 +628,39 @@ class PNGExport(inkex.Effect):
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
 
+    def flatten_bezier(self):
+        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
+        i = 0
+        for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
+            i += 1
+
+            layer_name = (layer.attrib[label_attrib_name])
+
+            if layer_name != "Edge.Cuts":
+                continue
+                
+            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
+            count = 0
+
+            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+                inkex.debug(node)
+                if node.tag == inkex.addNS('path','svg'):
+                    d = node.get('d')
+                    p = cubicsuperpath.parsePath(d)
+                    cspsubdiv.cspsubdiv(p, 0.01)
+                    np = []
+                    for sp in p:
+                        first = True
+                        for csp in sp:
+                            cmd = 'L'
+                            if first:
+                                cmd = 'M'
+                            first = False
+                            np.append([cmd,[csp[1][0],csp[1][1]]])
+                            node.set('d',simplepath.formatPath(np))
 
 def _main():
     e = PNGExport()
