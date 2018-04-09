@@ -29,7 +29,7 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 ## Tips
 
-1. For Edge.Cut Layer, polygon or object need to be converted to path without fill and only outline, make sure nodes also converted into straight lines
+1. For Edge.Cut Layer, polygon or object need to be converted to path without fill and only outline
 2. For Drill layer, place Circle object and it will be converted into drill pad in kicad
 
 ## Known Bugs
