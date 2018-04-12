@@ -424,11 +424,13 @@ class PNGExport(inkex.Effect):
         :arg  list  show:  layers to show. each element is a string.
         """
         doc = copy.deepcopy(self.document)
+        root = doc.getroot()
         for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
-            layer.attrib['style'] = 'display:none'
             id = layer.attrib["id"]
             if id in show:
                 layer.attrib['style'] = 'display:inline'
+            else:
+                root.remove(layer)
 
         doc.write(dest)
 
