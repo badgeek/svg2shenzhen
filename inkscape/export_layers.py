@@ -222,13 +222,13 @@ class PNGExport(inkex.Effect):
         self.layer_map = {
             #'inkscape-name' : kicad-name,
             'F.Cu' :    "F.Cu",
-            'B.Cu' :    "B.Cu",				
+            'B.Cu' :    "B.Cu",
             # 'Adhes' : "{}.Adhes",
             # 'Paste' : "{}.Paste",
             'F.Silk' : "F.Silk",
-            'B.Silk' : "B.Silk",				
+            'B.Silk' : "B.Silk",
             'F.Mask' :  "F.Mask",
-            'B.Mask' :  "B.Mask",				
+            'B.Mask' :  "B.Mask",
             # 'CrtYd' : "{}.CrtYd",
             # 'Fab' :   "{}.Fab",
             # 'Edge.Cuts' : "Edge.Cuts"
@@ -241,13 +241,13 @@ class PNGExport(inkex.Effect):
         self.export_image_folder = "images"
 
 
-    def coordToKicad(self,XYCoord):	
+    def coordToKicad(self,XYCoord):
         return [
             (XYCoord[0]-self.bb_width_center)/self.bb_scaling,
             (XYCoord[1]-self.bb_height_center)/self.bb_scaling,
         ]
 
-    def setInkscapeScaling(self):	
+    def setInkscapeScaling(self):
 
         root = self.document.getroot()
         height = float(self.document.getroot().get('height').replace("mm", ""))
@@ -261,7 +261,7 @@ class PNGExport(inkex.Effect):
         viewbox_w = float(viewbox[-2])
 
         self.bb_width_center = viewbox_w/2
-        self.bb_height_center = viewbox_h/2	
+        self.bb_height_center = viewbox_h/2
         self.bb_scaling = viewbox_h/height
 
     def setDocumentSquare(self):
@@ -275,7 +275,7 @@ class PNGExport(inkex.Effect):
         else:
             root.attrib['width'] = str(height) + "mm"
             root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
-    
+
     def createLayer(self, layer_name):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
         layer = inkex.etree.SubElement(svg, 'g')
@@ -296,14 +296,14 @@ class PNGExport(inkex.Effect):
         layer = self.createLayer("[fixed] BG")
         layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
         self.createWhitebg(layer)
-        self.createLayer("Edge.Cuts")                     
+        self.createLayer("Edge.Cuts")
         self.createLayer("B.Cu-disabled")
         self.createLayer("B.Mask-disabled")
-        self.createLayer("B.Silk-disabled")                        
+        self.createLayer("B.Silk-disabled")
         self.createLayer("F.Cu")
-        self.createLayer("F.Mask-disabled")        
-        self.createLayer("F.Silk-disabled")   
-        self.createLayer("Drill")   
+        self.createLayer("F.Mask-disabled")
+        self.createLayer("F.Silk-disabled")
+        self.createLayer("Drill")
 
     def effect(self):
         self.setDocumentSquare()
@@ -323,15 +323,15 @@ class PNGExport(inkex.Effect):
 
         #create pcb folder
         if not os.path.exists(os.path.join(output_path)):
-            os.makedirs(os.path.join(output_path))        
-        
+            os.makedirs(os.path.join(output_path))
+
         #create library folder
         if not os.path.exists(os.path.join(output_path, self.library_folder)):
-            os.makedirs(os.path.join(output_path, self.library_folder))        
+            os.makedirs(os.path.join(output_path, self.library_folder))
 
         #create images folder
         if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
-            os.makedirs(os.path.join(output_path, self.export_image_folder))        
+            os.makedirs(os.path.join(output_path, self.export_image_folder))
 
 
         for (layer_id, layer_label, layer_type) in layers:
@@ -340,7 +340,7 @@ class PNGExport(inkex.Effect):
 
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
 
-            
+
             invert = "true"
 
             if ("-invert" in layer_label):
@@ -353,7 +353,7 @@ class PNGExport(inkex.Effect):
                     self.export_layers(layer_dest_svg_path, show_layer_ids)
                 # close the file descriptor
                 os.close(fd)
-                if self.options.filetype == "kicad_pcb":                    
+                if self.options.filetype == "kicad_pcb":
                     #path for exported png
                     png_dest_kicad_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     #path for exported kicad
@@ -395,14 +395,14 @@ class PNGExport(inkex.Effect):
 
         with open(kicad_lib_path, 'w') as the_file:
             the_file.write(pcb_lib_table % (self.library_folder))
-            
+
         with open(kicad_pro_path, 'w') as the_file:
             the_file.write(pcb_project_file)
-                        
+
 
         if (self.options.openkicad):
             self.openKicad(kicad_pcb_path)
-        
+
     def export_layers(self, dest, show):
         """
         Export selected layers of SVG to the file `dest`.
@@ -433,7 +433,7 @@ class PNGExport(inkex.Effect):
 
             layer_label_name = layer_label.replace("-invert", "")
             # inkex.debug(layer_label_name)
-            
+
             if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
                 layer_label = layer_label
@@ -448,7 +448,7 @@ class PNGExport(inkex.Effect):
         return layers
 
     def openKicad(self, kicad_file_path):
-        platform_system = platform.system() 
+        platform_system = platform.system()
 
         if (platform_system == 'Darwin'):
             command = "open %s" % (kicad_file_path)
@@ -465,7 +465,7 @@ class PNGExport(inkex.Effect):
     def exportToKicad(self, png_path, output_path, layer_type, invert = "true"):
         plugin_path = os.path.dirname(os.path.abspath(__file__))
 
-        platform_system = platform.system() 
+        platform_system = platform.system()
 
         if (platform_system == 'Darwin'):
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component_osx')
@@ -507,7 +507,7 @@ class PNGExport(inkex.Effect):
             label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
             if label_attrib_name not in layer.attrib:
                 continue
-            
+
             layer_name = (layer.attrib[label_attrib_name])
 
             if layer_name != "Edge.Cuts":
@@ -518,7 +518,7 @@ class PNGExport(inkex.Effect):
                 layer_m = simpletransform.parseTransform(layer_trans)
             else:
                 layer_m = identity_m
-            
+
             nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
                 d = node.get('d')
@@ -548,7 +548,7 @@ class PNGExport(inkex.Effect):
 
                         for x in range (0, points_count):
                             kicad_edgecut_string = kicad_edgecut_string + ("(gr_line (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))\n"  % (points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
-        
+
         return kicad_edgecut_string
 
     def exportDrill(self):
@@ -587,7 +587,7 @@ class PNGExport(inkex.Effect):
                 layer_m = simpletransform.parseTransform(layer_trans)
             else:
                 layer_m = identity_m
-            
+
             nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:circle') % i
 
             count = 0
@@ -620,9 +620,9 @@ class PNGExport(inkex.Effect):
                 padCoord = self.coordToKicad(pt)
 
                 kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], count, float(drill_size) ))
-            
+
             return kicad_drill_string
-        
+
     def convertPngToJpg(self, png_path, output_path):
         command = "convert \"%s\" \"%s\"" % (png_path, output_path)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -641,7 +641,7 @@ class PNGExport(inkex.Effect):
 
             if layer_name != "Edge.Cuts":
                 continue
-                
+
             nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
             count = 0
 

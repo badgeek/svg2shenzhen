@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 import inkex
 
@@ -6,7 +6,7 @@ class MyEffect(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("-d", "--drillsize",
-                        action="store", type="float", 
+                        action="store", type="float",
                         dest="drillsize", default=0.8001,
                         help="Drill Size")
     def effect(self):
