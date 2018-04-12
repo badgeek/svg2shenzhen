@@ -17,6 +17,9 @@ import cspsubdiv
 import webbrowser
 
 
+EXPORT_PNG_MAX_PROCESSES = 20
+EXPORT_KICAD_MAX_PROCESSES = 3
+
 pcb_header = '''
 (kicad_pcb (version 4) (host pcbnew 4.0.7)
 
@@ -333,46 +336,56 @@ class PNGExport(inkex.Effect):
         if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
             os.makedirs(os.path.join(output_path, self.export_image_folder))
 
-
+        layer_arguments = []
         for (layer_id, layer_label, layer_type) in layers:
             if layer_type == "fixed":
                 continue
-
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
-
-
             invert = "true"
-
             if ("-invert" in layer_label):
                 layer_label = layer_label.replace("-invert", "")
                 invert = "false"
-
             fd, layer_dest_svg_path = tempfile.mkstemp()
-            try:
-                with open(layer_dest_svg_path, 'w') as f:
-                    self.export_layers(layer_dest_svg_path, show_layer_ids)
-                # close the file descriptor
-                os.close(fd)
-                if self.options.filetype == "kicad_pcb":
-                    #path for exported png
-                    png_dest_kicad_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (str(counter).zfill(3), layer_label))
-                    #path for exported kicad
-                    layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (str(counter).zfill(3), layer_label))
-                    #export layer to png
-                    self.exportToPng(layer_dest_svg_path, png_dest_kicad_path)
+            with open(layer_dest_svg_path, 'w') as f:
+                self.export_layers(layer_dest_svg_path, show_layer_ids)
+                #path for exported png
+            os.close(fd)
+            if self.options.filetype == "kicad_pcb":
+                layer_dest_png_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (str(counter).zfill(3), layer_label))
+            elif self.options.filetype == "kicad_module":
+                inkex.debug("kicad_module not implemented")
+            else:
+                layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
+
+            #path for exported kicad
+            layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (str(counter).zfill(3), layer_label))
+
+            layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
+            counter = counter + 1
+
+        for i in range(0, len(layer_arguments), EXPORT_PNG_MAX_PROCESSES):
+            processes = []
+            for layer_dest_svg_path, layer_dest_png_path, _, layer_label, _ in layer_arguments[i:i+EXPORT_PNG_MAX_PROCESSES]:
+                #export layer to png
+                p = self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+                processes.append(p)
+            for p in processes:
+                p.wait()
+
+        if self.options.filetype == "kicad_pcb":
+            for i in range(0, len(layer_arguments), EXPORT_KICAD_MAX_PROCESSES):
+                processes = []
+                for _, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert in layer_arguments[i:i+EXPORT_KICAD_MAX_PROCESSES]:
                     #export layer png to kicad
-                    self.exportToKicad(png_dest_kicad_path, layer_dest_kicad_path, layer_label, invert )
+                    p = self.exportToKicad(layer_dest_png_path, layer_dest_kicad_path, layer_label, invert)
+                    processes.append(p)
                     #collect kicad file path
                     kicad_mod_files.append(layer_dest_kicad_path)
-                elif self.options.filetype == "kicad_module":
-                        inkex.debug("kicad_module not implemented")
-                else:
-                    layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
-                    self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
-            finally:
-                os.remove(layer_dest_svg_path)
+                for p in processes:
+                    p.wait()
 
-            counter = counter + 1
+        for layer_dest_svg_path, _, _, _, _ in layer_arguments:
+            os.remove(layer_dest_svg_path)
 
         kicad_edgecut_string = self.exportEdgeCut()
         kicad_drill_string = self.exportDrill()
@@ -476,16 +489,13 @@ class PNGExport(inkex.Effect):
 
         command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         inkex.debug(command)
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     def exportToPng(self, svg_path, output_path):
         area_param = '-D' if self.options.crop else 'C'
         command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
-
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     def exportEdgeCut(self):
