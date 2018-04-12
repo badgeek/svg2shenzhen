@@ -453,7 +453,7 @@ class PNGExport(inkex.Effect):
         if (platform_system == 'Darwin'):
             command = "open %s" % (kicad_file_path)
         elif (platform_system == 'Linux'):
-            command = "xda-open %s" % (kicad_file_path)
+            command = "xdg-open %s" % (kicad_file_path)
         else:
             command = "start %s" % (kicad_file_path)
 
