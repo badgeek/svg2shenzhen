@@ -15,6 +15,8 @@ from simplestyle import *
 import cubicsuperpath
 import cspsubdiv
 import webbrowser
+import hashlib
+import xml.etree.ElementTree as ET
 
 
 EXPORT_PNG_MAX_PROCESSES = 20
@@ -337,6 +339,7 @@ class PNGExport(inkex.Effect):
             os.makedirs(os.path.join(output_path, self.export_image_folder))
 
         layer_arguments = []
+        temp_svg_paths = []
         for (layer_id, layer_label, layer_type) in layers:
             if layer_type == "fixed":
                 continue
@@ -345,22 +348,32 @@ class PNGExport(inkex.Effect):
             if ("-invert" in layer_label):
                 layer_label = layer_label.replace("-invert", "")
                 invert = "false"
+            hash_sum_path = os.path.join(tempfile.gettempdir(), 'svg2shenzhen-{}-{}-{}-{}'.format(layer_id, layer_label, layer_type, invert))
+
+            prev_hash_sum = None
+            if os.path.exists(hash_sum_path):
+              with open(hash_sum_path, 'r') as f:
+                  prev_hash_sum = f.read()
+
             fd, layer_dest_svg_path = tempfile.mkstemp()
-            with open(layer_dest_svg_path, 'w') as f:
-                self.export_layers(layer_dest_svg_path, show_layer_ids)
-                #path for exported png
             os.close(fd)
+            hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
+            temp_svg_paths.append(layer_dest_svg_path)
+
             if self.options.filetype == "kicad_pcb":
                 layer_dest_png_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (str(counter).zfill(3), layer_label))
             elif self.options.filetype == "kicad_module":
                 inkex.debug("kicad_module not implemented")
             else:
                 layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
-
-            #path for exported kicad
             layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (str(counter).zfill(3), layer_label))
+            kicad_mod_files.append(layer_dest_kicad_path)
 
-            layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
+            if hash_sum != prev_hash_sum:
+                with open(hash_sum_path, 'w') as f:
+                    f.write(hash_sum)
+                layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
+
             counter = counter + 1
 
         for i in range(0, len(layer_arguments), EXPORT_PNG_MAX_PROCESSES):
@@ -379,12 +392,10 @@ class PNGExport(inkex.Effect):
                     #export layer png to kicad
                     p = self.exportToKicad(layer_dest_png_path, layer_dest_kicad_path, layer_label, invert)
                     processes.append(p)
-                    #collect kicad file path
-                    kicad_mod_files.append(layer_dest_kicad_path)
                 for p in processes:
                     p.wait()
 
-        for layer_dest_svg_path, _, _, _, _ in layer_arguments:
+        for layer_dest_svg_path in temp_svg_paths:
             os.remove(layer_dest_svg_path)
 
         kicad_edgecut_string = self.exportEdgeCut()
@@ -432,7 +443,15 @@ class PNGExport(inkex.Effect):
             else:
                 root.remove(layer)
 
+        # remove the namedview for the hash as it changes based on user zoom/scroll
+        namedview = doc.find('sodipodi:namedview', namespaces=inkex.NSS)
+        root.remove(namedview)
+
         doc.write(dest)
+
+        # returns a hash of the exported layer contents which can be used to
+        # detect changes
+        return hashlib.md5(ET.tostring(root)).hexdigest()
 
     def get_layers(self, src):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
