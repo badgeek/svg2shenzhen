@@ -13,7 +13,7 @@ from simplestyle import *
 
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
-class PNGExport(inkex.Effect):
+class Svg2ShenzhenPrepare(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
@@ -180,7 +180,7 @@ class PNGExport(inkex.Effect):
 
 
 def _main():
-    e = PNGExport()
+    e = Svg2ShenzhenPrepare()
     e.affect()
     exit()
 

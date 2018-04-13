@@ -204,7 +204,7 @@ LibName29=valves
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 
-class PNGExport(inkex.Effect):
+class Svg2ShenzhenExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
@@ -705,7 +705,7 @@ class PNGExport(inkex.Effect):
                             node.set('d',simplepath.formatPath(np))
 
 def _main():
-    e = PNGExport()
+    e = Svg2ShenzhenExport()
     e.affect()
     exit()
 
