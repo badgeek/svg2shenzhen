@@ -317,7 +317,6 @@ class PNGExport(inkex.Effect):
         self.processExportLayer()
         if (self.options.openfactory):
             webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
-        # inkex.debug(self.exportDrill())
 
     def processExportLayer(self):
         options_path = os.path.join(tempfile.gettempdir(), 'svg2shenzhen-options')
@@ -481,7 +480,6 @@ class PNGExport(inkex.Effect):
             layer_label = layer.attrib[label_attrib_name]
 
             layer_label_name = layer_label.replace("-invert", "")
-            # inkex.debug(layer_label_name)
 
             if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
@@ -524,7 +522,6 @@ class PNGExport(inkex.Effect):
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
         command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
-        inkex.debug(command)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
@@ -692,7 +689,6 @@ class PNGExport(inkex.Effect):
             count = 0
 
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                # inkex.debug(node)
                 if node.tag == inkex.addNS('path','svg'):
                     d = node.get('d')
                     p = cubicsuperpath.parsePath(d)
