@@ -48,6 +48,11 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 - [Buy me Coffee - patreon](https://www.patreon.com/badgeek)
 
+
+## Contributor
+- Budi Prakosa @badgeek
+- Kaspar Emanual @kasbah
+
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
 * bitmap2component (kicad) - https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component
