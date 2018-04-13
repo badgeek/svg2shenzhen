@@ -17,6 +17,7 @@ import cspsubdiv
 import webbrowser
 import hashlib
 import xml.etree.ElementTree as ET
+import pickle
 
 
 EXPORT_PNG_MAX_PROCESSES = 20
@@ -319,6 +320,23 @@ class PNGExport(inkex.Effect):
         # inkex.debug(self.exportDrill())
 
     def processExportLayer(self):
+        options_path = os.path.join(tempfile.gettempdir(), 'svg2shenzhen-options')
+
+        if os.path.exists(options_path):
+            with open(options_path, 'r') as f:
+                prev_options = pickle.load(f)
+            dpi_equal = prev_options.dpi == self.options.dpi
+            path_equal = prev_options.path == self.options.path
+            crop_equal = prev_options.crop == self.options.crop
+            filetype_equal = prev_options.filetype == self.options.filetype
+            threshold_equal = prev_options.threshold == self.options.threshold
+            ignore_hashes = not dpi_equal or not path_equal or not crop_equal or not filetype_equal or not threshold_equal
+        else:
+            ignore_hashes = True
+
+        with open(options_path, 'w') as f:
+            pickle.dump(self.options, f)
+
         output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
@@ -369,7 +387,7 @@ class PNGExport(inkex.Effect):
             layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (str(counter).zfill(3), layer_label))
             kicad_mod_files.append(layer_dest_kicad_path)
 
-            if hash_sum != prev_hash_sum:
+            if ignore_hashes or hash_sum != prev_hash_sum:
                 with open(hash_sum_path, 'w') as f:
                     f.write(hash_sum)
                 layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
