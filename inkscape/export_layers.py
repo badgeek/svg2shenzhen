@@ -90,7 +90,7 @@ pcb_header = '''
 		(aux_axis_origin 0 0)
 		(visible_elements FFFFFF7F)
 		(pcbplotparams
-			(layerselection 0x00030_80000001)
+			(layerselection 0x010f0_80000001)
 			(usegerberextensions false)
 			(excludeedgelayer true)
 			(linewidth 0.100000)
@@ -113,7 +113,7 @@ pcb_header = '''
 			(mirror false)
 			(drillshape 1)
 			(scaleselection 1)
-			(outputdirectory ""))
+			(outputdirectory gerbers/))
 	)
 
 	(net 0 "")
