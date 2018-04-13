@@ -382,7 +382,8 @@ class Svg2ShenzhenExport(inkex.Effect):
             layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (layer_label, layer_id))
             kicad_mod_files.append(layer_dest_kicad_path)
 
-            if ignore_hashes or hash_sum != prev_hash_sum:
+
+            if ignore_hashes or hash_sum != prev_hash_sum or not os.path.exists(layer_dest_kicad_path):
                 with open(hash_sum_path, 'w') as f:
                     f.write(hash_sum)
                 layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
