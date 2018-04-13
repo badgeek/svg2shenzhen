@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <_name>1. Prepare Document</_name>
     <id>net.svg2shenzhen.prepare.doc</id>
-    <dependency type="executable" location="extensions">svg2shenzhen_prepare.py</dependency>
+    <dependency type="executable" location="extensions">svg2shenzhen/prepare.py</dependency>
 	<param name="help" type="description">Prepare document for Kicad Export</param>
     <param name="docwidth" type="float" min="0.0" max="100000.0" _gui-text="Document width (mm)">100</param>
     <effect needs-live-preview="false">
@@ -12,6 +12,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">svg2shenzhen_prepare.py</command>
+        <command reldir="extensions" interpreter="python">svg2shenzhen/prepare.py</command>
     </script>
 </inkscape-extension>

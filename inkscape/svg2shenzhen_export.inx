@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <_name>2. Export Kicad</_name>
     <id>net.svg2shenzhen.export.layers</id>
-    <dependency type="executable" location="extensions">svg2shenzhen_export.py</dependency>
+    <dependency type="executable" location="extensions">svg2shenzhen/export.py</dependency>
 	<param name="help" type="description">Export Drawing to Kicad PCB Format</param>
     <param name="path" type="string"  _gui-text="Choose path to export">~/</param>
     <param name="filetype" type="optiongroup" gui-text="Export layers as..." appearance="minimal">
@@ -24,6 +24,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">svg2shenzhen_export.py</command>
+        <command reldir="extensions" interpreter="python">svg2shenzhen/export.py</command>
     </script>
 </inkscape-extension>
