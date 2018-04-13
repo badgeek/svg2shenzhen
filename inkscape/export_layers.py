@@ -21,7 +21,7 @@ import pickle
 
 
 EXPORT_PNG_MAX_PROCESSES = 20
-EXPORT_KICAD_MAX_PROCESSES = 3
+EXPORT_KICAD_MAX_PROCESSES = 2
 
 pcb_header = '''
 (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -393,7 +393,7 @@ class PNGExport(inkex.Effect):
 
         for i in range(0, len(layer_arguments), EXPORT_PNG_MAX_PROCESSES):
             processes = []
-            for layer_dest_svg_path, layer_dest_png_path, _, layer_label, _ in layer_arguments[i:i+EXPORT_PNG_MAX_PROCESSES]:
+            for layer_dest_svg_path, layer_dest_png_path, _, _, _ in layer_arguments[i:i+EXPORT_PNG_MAX_PROCESSES]:
                 #export layer to png
                 p = self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
                 processes.append(p)
