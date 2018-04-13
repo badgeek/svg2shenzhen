@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
    <_name>Set Selected Drill Size</_name>
    <id>net.svg2shenzhen.drill.size</id>
-       <dependency type="executable" location="extensions">drill_size.py</dependency>
+       <dependency type="executable" location="extensions">svg2shenzhen_drill_size.py</dependency>
        <dependency type="executable" location="extensions">inkex.py</dependency>
        <param name="drillsize" type="float" min="0.0" max="10.0" _gui-text="Drill Size (mm) default: 0.8 :">0.8001</param>
    <effect>
@@ -12,6 +12,6 @@
                 </effects-menu>
    </effect>
    <script>
-       <command reldir="extensions" interpreter="python">drill_size.py</command>
+       <command reldir="extensions" interpreter="python">svg2shenzhen_drill_size.py</command>
    </script>
 </inkscape-extension>
