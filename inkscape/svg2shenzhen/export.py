@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-import sys
-sys.path.append('/usr/share/inkscape/extensions')
 import inkex
 import os
 import subprocess
@@ -206,7 +204,7 @@ identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 class Svg2ShenzhenExport(inkex.Effect):
     def __init__(self):
-        """init the effetc library and get options from gui"""
+        """init the effect library and get options from gui"""
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
         self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
@@ -639,10 +637,6 @@ class Svg2ShenzhenExport(inkex.Effect):
                 cx = float(node.get('cx'))
                 cy = float(node.get('cy'))
 
-                # if (node.get('rx') and node.get('ry')):
-                #     rx = float(node.get('rx'))
-                #     ry = float(node.get('ry'))
-
                 radius = float(node.get('r'))
                 t = node.get('transform')
 
@@ -665,11 +659,6 @@ class Svg2ShenzhenExport(inkex.Effect):
                 kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], count, float(drill_size) ))
 
             return kicad_drill_string
-
-    def convertPngToJpg(self, png_path, output_path):
-        command = "convert \"%s\" \"%s\"" % (png_path, output_path)
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
 
     def flatten_bezier(self):
         layerPath = '//svg:g[@inkscape:groupmode="layer"]'
