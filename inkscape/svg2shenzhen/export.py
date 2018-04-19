@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-import sys
-sys.path.append('/usr/share/inkscape/extensions')
 import inkex
 import os
 import subprocess
@@ -90,7 +88,7 @@ pcb_header = '''
 		(aux_axis_origin 0 0)
 		(visible_elements FFFFFF7F)
 		(pcbplotparams
-			(layerselection 0x00030_80000001)
+			(layerselection 0x010f0_80000001)
 			(usegerberextensions false)
 			(excludeedgelayer true)
 			(linewidth 0.100000)
@@ -113,7 +111,7 @@ pcb_header = '''
 			(mirror false)
 			(drillshape 1)
 			(scaleselection 1)
-			(outputdirectory ""))
+			(outputdirectory gerbers/))
 	)
 
 	(net 0 "")
@@ -204,9 +202,9 @@ LibName29=valves
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 
-class PNGExport(inkex.Effect):
+class Svg2ShenzhenExport(inkex.Effect):
     def __init__(self):
-        """init the effetc library and get options from gui"""
+        """init the effect library and get options from gui"""
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
         self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
@@ -317,7 +315,6 @@ class PNGExport(inkex.Effect):
         self.processExportLayer()
         if (self.options.openfactory):
             webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
-        # inkex.debug(self.exportDrill())
 
     def processExportLayer(self):
         options_path = os.path.join(tempfile.gettempdir(), 'svg2shenzhen-options')
@@ -385,7 +382,8 @@ class PNGExport(inkex.Effect):
             layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (layer_label, layer_id))
             kicad_mod_files.append(layer_dest_kicad_path)
 
-            if ignore_hashes or hash_sum != prev_hash_sum:
+
+            if ignore_hashes or hash_sum != prev_hash_sum or not os.path.exists(layer_dest_kicad_path):
                 with open(hash_sum_path, 'w') as f:
                     f.write(hash_sum)
                 layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
@@ -481,7 +479,6 @@ class PNGExport(inkex.Effect):
             layer_label = layer.attrib[label_attrib_name]
 
             layer_label_name = layer_label.replace("-invert", "")
-            # inkex.debug(layer_label_name)
 
             if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
@@ -524,7 +521,6 @@ class PNGExport(inkex.Effect):
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
         command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
-        inkex.debug(command)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
@@ -642,10 +638,6 @@ class PNGExport(inkex.Effect):
                 cx = float(node.get('cx'))
                 cy = float(node.get('cy'))
 
-                # if (node.get('rx') and node.get('ry')):
-                #     rx = float(node.get('rx'))
-                #     ry = float(node.get('ry'))
-
                 radius = float(node.get('r'))
                 t = node.get('transform')
 
@@ -669,11 +661,6 @@ class PNGExport(inkex.Effect):
 
             return kicad_drill_string
 
-    def convertPngToJpg(self, png_path, output_path):
-        command = "convert \"%s\" \"%s\"" % (png_path, output_path)
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
-
     def flatten_bezier(self):
         layerPath = '//svg:g[@inkscape:groupmode="layer"]'
         i = 0
@@ -692,7 +679,6 @@ class PNGExport(inkex.Effect):
             count = 0
 
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                # inkex.debug(node)
                 if node.tag == inkex.addNS('path','svg'):
                     d = node.get('d')
                     p = cubicsuperpath.parsePath(d)
@@ -709,7 +695,7 @@ class PNGExport(inkex.Effect):
                             node.set('d',simplepath.formatPath(np))
 
 def _main():
-    e = PNGExport()
+    e = Svg2ShenzhenExport()
     e.affect()
     exit()
 

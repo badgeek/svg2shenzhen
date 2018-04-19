@@ -13,7 +13,7 @@ from simplestyle import *
 
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
-class PNGExport(inkex.Effect):
+class Svg2ShenzhenPrepare(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
@@ -23,18 +23,18 @@ class PNGExport(inkex.Effect):
         self.bb_height_center = 0
         self.bb_scaling = 0
 
-    def coordToKicad(self,XYCoord):	
+    def coordToKicad(self,XYCoord):
         return [
             (XYCoord[0]-self.bb_width_center)/self.bb_scaling,
             (XYCoord[1]-self.bb_height_center)/self.bb_scaling,
         ]
 
-    def setInkscapeScaling(self):	
+    def setInkscapeScaling(self):
 
         root = self.document.getroot()
         height = float(self.document.getroot().get('height').replace("mm", ""))
         width = float(self.document.getroot().get('width').replace("mm", ""))
-        
+
         viewbox = root.attrib['viewBox'].split(' ')
         viewbox_h = float(viewbox[-1])
         viewbox_w = float(viewbox[-2])
@@ -42,7 +42,7 @@ class PNGExport(inkex.Effect):
         self.doc_width = width
         self.doc_height = height
         self.bb_width_center = viewbox_w/2
-        self.bb_height_center = viewbox_h/2	
+        self.bb_height_center = viewbox_h/2
         self.bb_scaling = viewbox_h/height
 
 
@@ -53,7 +53,7 @@ class PNGExport(inkex.Effect):
         root.attrib['width'] = str(width) + "mm"
         root.attrib['height'] = str(width) + "mm"
         root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
-            
+
 
     def createLayer(self, layer_name):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
@@ -84,34 +84,34 @@ class PNGExport(inkex.Effect):
             layers.append(layer_label)
 
         if ("[fixed] BG" not in layers):
-            white_layer = self.createLayer("[fixed] BG") 
+            white_layer = self.createLayer("[fixed] BG")
             white_layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
             rect = self.createWhitebg()
-            white_layer.append(rect)            
+            white_layer.append(rect)
 
         if ("Edge.Cuts" not in layers):
-            self.createLayer("Edge.Cuts") 
+            self.createLayer("Edge.Cuts")
 
         if ("B.Cu-disabled" not in layers and "B.Cu" not in layers):
-            self.createLayer("B.Cu-disabled") 
+            self.createLayer("B.Cu-disabled")
 
         if ("B.Mask-disabled" not in layers and "B.Mask" not in layers):
-            self.createLayer("B.Mask-disabled") 
+            self.createLayer("B.Mask-disabled")
 
         if ("B.Silk-disabled" not in layers and "B.Silk" not in layers):
-            self.createLayer("B.Silk-disabled") 
+            self.createLayer("B.Silk-disabled")
 
         if ("F.Cu" not in layers and "F.Cu-disabled" not in layers):
-            self.createLayer("F.Cu") 
+            self.createLayer("F.Cu")
 
         if ("F.Mask-disabled" not in layers and "F.Mask" not in layers):
-            self.createLayer("F.Mask-disabled") 
+            self.createLayer("F.Mask-disabled")
 
         if ("F.Silk-disabled" not in layers and "F.Silk" not in layers):
-            self.createLayer("F.Silk-disabled") 
-                               
+            self.createLayer("F.Silk-disabled")
+
         if ("Drill" not in layers):
-            self.createLayer("Drill") 
+            self.createLayer("Drill")
 
     def setDocumentGrid(self):
         doc_view = self.document.xpath('//sodipodi:namedview',namespaces=inkex.NSS)[0]
@@ -129,7 +129,7 @@ class PNGExport(inkex.Effect):
 
     def effect(self):
         self.setDocumentSquare(self.options.docwidth)
-        self.setInkscapeScaling()        
+        self.setInkscapeScaling()
         self.prepareDocument()
         self.setDocumentGrid()
 
@@ -180,7 +180,7 @@ class PNGExport(inkex.Effect):
 
 
 def _main():
-    e = PNGExport()
+    e = Svg2ShenzhenPrepare()
     e.affect()
     exit()
 

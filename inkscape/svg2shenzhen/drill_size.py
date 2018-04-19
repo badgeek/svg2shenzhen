@@ -2,7 +2,7 @@
 
 import inkex
 
-class MyEffect(inkex.Effect):
+class Svg2ShenzhenDrillSize(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("-d", "--drillsize",
@@ -16,5 +16,5 @@ class MyEffect(inkex.Effect):
                 node.set('r', str(self.options.drillsize))
 
 if __name__ == '__main__':
-    e = MyEffect()
+    e = Svg2ShenzhenDrillSize()
     e.affect()
