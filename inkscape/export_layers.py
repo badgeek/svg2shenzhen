@@ -21,7 +21,7 @@ import pickle
 
 
 EXPORT_PNG_MAX_PROCESSES = 20
-EXPORT_KICAD_MAX_PROCESSES = 3
+EXPORT_KICAD_MAX_PROCESSES = 2
 
 pcb_header = '''
 (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -340,8 +340,6 @@ class PNGExport(inkex.Effect):
         output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
-        counter = 1
-
         kicad_mod_files = []
 
         #create pcb folder
@@ -379,12 +377,12 @@ class PNGExport(inkex.Effect):
             temp_svg_paths.append(layer_dest_svg_path)
 
             if self.options.filetype == "kicad_pcb":
-                layer_dest_png_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (str(counter).zfill(3), layer_label))
+                layer_dest_png_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (layer_label, layer_id))
             elif self.options.filetype == "kicad_module":
-                inkex.debug("kicad_module not implemented")
+                inkex.errormsg("kicad_module not implemented")
             else:
-                layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
-            layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (str(counter).zfill(3), layer_label))
+                layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (layer_label, layer_id))
+            layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (layer_label, layer_id))
             kicad_mod_files.append(layer_dest_kicad_path)
 
             if ignore_hashes or hash_sum != prev_hash_sum:
@@ -392,11 +390,10 @@ class PNGExport(inkex.Effect):
                     f.write(hash_sum)
                 layer_arguments.append((layer_dest_svg_path, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert))
 
-            counter = counter + 1
 
         for i in range(0, len(layer_arguments), EXPORT_PNG_MAX_PROCESSES):
             processes = []
-            for layer_dest_svg_path, layer_dest_png_path, _, layer_label, _ in layer_arguments[i:i+EXPORT_PNG_MAX_PROCESSES]:
+            for layer_dest_svg_path, layer_dest_png_path, _, _, _ in layer_arguments[i:i+EXPORT_PNG_MAX_PROCESSES]:
                 #export layer to png
                 p = self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
                 processes.append(p)
