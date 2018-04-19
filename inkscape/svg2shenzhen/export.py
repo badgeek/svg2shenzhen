@@ -242,6 +242,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         self.library_table_file = "fp-lib-table"
         self.kicad_project_file = "pcbart.pro"
         self.kicad_pcb_file = "pcbart.kicad_pcb"
+        self.kicad_mod_file = "pcbart.kicad_mod"
         self.export_image_folder = "images"
 
 
@@ -373,10 +374,8 @@ class Svg2ShenzhenExport(inkex.Effect):
             hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
             temp_svg_paths.append(layer_dest_svg_path)
 
-            if self.options.filetype == "kicad_pcb":
+            if self.options.filetype == "kicad_pcb" or self.options.filetype == "kicad_module":
                 layer_dest_png_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (layer_label, layer_id))
-            elif self.options.filetype == "kicad_module":
-                inkex.errormsg("kicad_module not implemented")
             else:
                 layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (layer_label, layer_id))
             layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (layer_label, layer_id))
@@ -398,7 +397,10 @@ class Svg2ShenzhenExport(inkex.Effect):
             for p in processes:
                 p.wait()
 
-        if self.options.filetype == "kicad_pcb":
+        for layer_dest_svg_path in temp_svg_paths:
+            os.remove(layer_dest_svg_path)
+
+        if self.options.filetype == "kicad_pcb" or self.options.filetype == "kicad_module":
             for i in range(0, len(layer_arguments), EXPORT_KICAD_MAX_PROCESSES):
                 processes = []
                 for _, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert in layer_arguments[i:i+EXPORT_KICAD_MAX_PROCESSES]:
@@ -407,38 +409,49 @@ class Svg2ShenzhenExport(inkex.Effect):
                     processes.append(p)
                 for p in processes:
                     p.wait()
+        else:
+            return
 
-        for layer_dest_svg_path in temp_svg_paths:
-            os.remove(layer_dest_svg_path)
+        kicad_edgecut_string = self.exportEdgeCut(kicad_mod = self.options.filetype == "kicad_module")
+        kicad_drill_string = self.exportDrill(kicad_mod = self.options.filetype == "kicad_module")
 
-        kicad_edgecut_string = self.exportEdgeCut()
-        kicad_drill_string = self.exportDrill()
-        kicad_modules_string = ""
+        if self.options.filetype == "kicad_pcb":
+            kicad_modules_string = ""
+            for kicad_file in kicad_mod_files:
+                with open(kicad_file, 'r') as f:
+                    kicad_modules_string += f.read()
+            kicad_pcb_path = os.path.join(output_path, self.kicad_pcb_file )
+            kicad_lib_path = os.path.join(output_path, self.library_table_file )
+            kicad_pro_path = os.path.join(output_path, self.kicad_project_file )
+            with open(kicad_pcb_path, 'w') as f:
+                f.write(pcb_header)
+                f.write(kicad_modules_string)
+                f.write(kicad_edgecut_string)
+                f.write(kicad_drill_string)
+                f.write(pcb_footer)
 
-        for kicad_file in kicad_mod_files:
-            with open(kicad_file, 'r') as myfile:
-                kicad_modules_string = kicad_modules_string + myfile.read()
+            with open(kicad_lib_path, 'w') as f:
+                f.write(pcb_lib_table % (self.library_folder))
 
-        kicad_pcb_path = os.path.join(output_path, self.kicad_pcb_file )
-        kicad_lib_path = os.path.join(output_path, self.library_table_file )
-        kicad_pro_path = os.path.join(output_path, self.kicad_project_file )
+            with open(kicad_pro_path, 'w') as f:
+                f.write(pcb_project_file)
 
-        with open(kicad_pcb_path, 'w') as the_file:
-            the_file.write(pcb_header)
-            the_file.write(kicad_modules_string)
-            the_file.write(kicad_edgecut_string)
-            the_file.write(kicad_drill_string)
-            the_file.write(pcb_footer)
+            if (self.options.openkicad):
+                self.openKicad(kicad_pcb_path)
 
-        with open(kicad_lib_path, 'w') as the_file:
-            the_file.write(pcb_lib_table % (self.library_folder))
+        elif self.options.filetype == "kicad_module":
+            kicad_modules_string = "(module pcbart (layer F.Cu)"
+            for kicad_file in kicad_mod_files:
+                with open(kicad_file, 'r') as f:
+                    mod = f.readlines()[8:-1]
+                    kicad_modules_string += "".join(mod)
+            kicad_modules_string += kicad_edgecut_string
+            kicad_modules_string += kicad_drill_string
+            kicad_modules_string += ")"
+            kicad_mod_path = os.path.join(output_path, self.kicad_mod_file)
+            with open(kicad_mod_path, 'w') as f:
+                f.write(kicad_modules_string)
 
-        with open(kicad_pro_path, 'w') as the_file:
-            the_file.write(pcb_project_file)
-
-
-        if (self.options.openkicad):
-            self.openKicad(kicad_pcb_path)
 
     def export_layers(self, dest, show):
         """
@@ -520,20 +533,22 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
+        command =  "'%s' '%s' '%s' '%s' '%s' '%s' '%s'" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     def exportToPng(self, svg_path, output_path):
         area_param = '-D' if self.options.crop else 'C'
-        command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
+        command = "inkscape '%s' -d '%s' -e '%s' '%s'" % (area_param, self.options.dpi, output_path, svg_path)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-    def exportEdgeCut(self):
+    def exportEdgeCut(self, kicad_mod=False):
         x0 = 0
         y0 = 0
         mirror = 1.0
+
+        line_type = "fp_line" if kicad_mod else "gr_line"
 
         kicad_edgecut_string = ""
 
@@ -589,11 +604,11 @@ class Svg2ShenzhenExport(inkex.Effect):
                         points.append(points[0])
 
                         for x in range (0, points_count):
-                            kicad_edgecut_string = kicad_edgecut_string + ("(gr_line (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))\n"  % (points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
+                            kicad_edgecut_string = kicad_edgecut_string + ("(%s (start %f %f) (end %f %f) (layer Edge.Cuts) (width 0.1))\n"  % (line_type, points[x][0],points[x][1],points[x+1][0],points[x+1][1]))
 
         return kicad_edgecut_string
 
-    def exportDrill(self):
+    def exportDrill(self, kicad_mod=False):
         x0 = 0
         y0 = 0
         mirror = 1.0
@@ -604,12 +619,15 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         i = 0
 
-        pad_template = """
-            (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
-                (at %f %f)
-                (pad %d thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill %f) (layers *.Cu *.Mask))
-            )
-        """
+        if kicad_mod:
+            pad_template = "(pad {n} thru_hole circle (at {x} {y}) (size 1.99898 1.99898) (drill {d}) (layers *.Cu *.Mask))\n"
+        else:
+            pad_template = """
+                (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
+                    (at {x} {y})
+                    (pad {n} thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill {d}) (layers *.Cu *.Mask))
+                )
+            """
 
         layerPath = '//svg:g[@inkscape:groupmode="layer"]'
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
@@ -657,7 +675,8 @@ class Svg2ShenzhenExport(inkex.Effect):
                 simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
-                kicad_drill_string = kicad_drill_string + (pad_template % (padCoord[0], padCoord[1], count, float(drill_size) ))
+
+                kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=float(drill_size))
 
             return kicad_drill_string
 

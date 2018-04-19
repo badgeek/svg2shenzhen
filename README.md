@@ -1,8 +1,6 @@
 # Svg2Shenzhen
 Inkscape extension for exporting drawing into Kicad PCB
 
-TODO
-
 ![screenshot_125](https://user-images.githubusercontent.com/64752/38157030-170a81a0-34ad-11e8-85df-667a642505d8.png)
 
 ## Features
@@ -22,7 +20,7 @@ Extract and copy the files into the directory indicated in Edit -> Preferences -
 
     1.Extension > Svg2Shenzhen > Prepare Document
     2.Choose layer (F.Cu.. etc)
-    3.Draw PCB 
+    3.Draw PCB
     4.Extension > Svg2Shenzhen > Export Kicad
 
 Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2shenzhen-next/master/examples/viruspcb.svg)
@@ -36,10 +34,10 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 - The port of bitmap2component does not support non square image input, this issue tackled in prepare document by setting the document to square
 
-## Reference
+## References
 
 - [Svg2Shenzhen Announcement on Gosh Community Forum](https://forum.openhardware.science/t/svg2shenzhen-save-inkscape-drawing-as-kicad-pcb/989)
-- [PCB Art with Inkscape - Developer log](http://wiki.8bitmixtape.cc/#/4_7.1-PCB-Art-with-Kicad-and-Inkscape) on 8BitMixtape Wiki 
+- [PCB Art with Inkscape - Developer log](http://wiki.8bitmixtape.cc/#/4_7.1-PCB-Art-with-Kicad-and-Inkscape) on 8BitMixtape Wiki
 - [Practical Guide to Designing PCB Art](https://medium.com/@urish/a-practical-guide-to-designing-pcb-art-b5aa22926a5c)
 - [KitSprint ANORG 2018](http://wiki.sgmk-ssam.ch/wiki/KitSprint_ANORG_2018#Kicad_bitmap_import_for_Shenzhen_Ready)
 
@@ -49,9 +47,9 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 - [Buy me Coffee - patreon](https://www.patreon.com/badgeek)
 
 
-## Contributor
-- Budi Prakosa @badgeek
-- Kaspar Emanual @kasbah
+## Contributors
+- Budi Prakosa [@badgeek](https://github.com/badgeek)
+- Kaspar Emanuel [@kasbah](https://github.com/kasbah)
 
 ## Credits
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
