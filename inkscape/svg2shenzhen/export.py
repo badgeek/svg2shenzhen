@@ -301,9 +301,17 @@ class Svg2ShenzhenExport(inkex.Effect):
         kicad_mod_file = "{}.kicad_mod".format(name)
         kicad_mod_files = []
 
-        library_folder_path = os.path.join(output_path, library_folder)
-        image_folder_path = os.path.join(output_path, EXPORT_IMAGE_FOLDER)
         cache_folder_path = os.path.join(output_path, EXPORT_CACHE_FOLDER)
+
+        if options.filetype == "png":
+            image_folder_path = output_path
+        else:
+            image_folder_path = os.path.join(cache_folder_path, EXPORT_IMAGE_FOLDER)
+
+        if options.filetype == "kicad_pcb":
+            library_folder_path = os.path.join(output_path, library_folder)
+        else:
+            library_folder_path = os.path.join(cache_folder_path, library_folder)
 
         if not os.path.exists(output_path):
             os.makedirs(output_path)
@@ -359,10 +367,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
             temp_svg_paths.append(layer_dest_svg_path)
 
-            if options.filetype == "kicad_pcb" or options.filetype == "kicad_module":
-                layer_dest_png_path = os.path.join(image_folder_path,  "%s_%s.png" % (layer_label, layer_id))
-            else:
-                layer_dest_png_path = os.path.join(image_folder_path, "%s_%s.png" % (layer_label, layer_id))
+            layer_dest_png_path = os.path.join(image_folder_path,  "%s_%s.png" % (layer_label, layer_id))
             layer_dest_kicad_path = os.path.join(library_folder_path, "%s_%s.kicad_mod" % (layer_label, layer_id))
             kicad_mod_files.append(layer_dest_kicad_path)
 
