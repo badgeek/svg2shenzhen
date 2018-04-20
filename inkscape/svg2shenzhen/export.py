@@ -327,7 +327,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         kicad_pro_path = os.path.join(output_path, kicad_project_file )
         kicad_mod_path = os.path.join(output_path, kicad_mod_file)
 
-        options_path = os.path.join(cache_folder_path, 'svg2shenzhen-options')
+        options_path = os.path.join(cache_folder_path, 'options.pickle')
 
         if os.path.exists(options_path):
             with open(options_path, 'r') as f:
@@ -354,7 +354,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             if ("-invert" in layer_label):
                 layer_label = layer_label.replace("-invert", "")
                 invert = "false"
-            hash_sum_path = os.path.join(cache_folder_path, 'svg2shenzhen-{}-{}-{}-{}'.format(layer_id, layer_label, layer_type, invert))
+            hash_sum_path = os.path.join(cache_folder_path, '{}-{}-{}-{}.hash'.format(layer_id, layer_label, layer_type, invert))
 
             prev_hash_sum = None
             if os.path.exists(hash_sum_path):
