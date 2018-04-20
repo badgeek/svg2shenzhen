@@ -132,7 +132,7 @@ pcb_footer = '''
 
 pcb_lib_table = '''
 (fp_lib_table
-  (lib (name pcbart)(type KiCad)(uri "$(KIPRJMOD)/%s")(options "")(descr ""))
+  (lib (name "{name}")(type KiCad)(uri "$(KIPRJMOD)/{folder}")(options "")(descr ""))
 )
 '''
 
@@ -202,6 +202,11 @@ LibName29=valves
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 
+LIBRARY_TABLE_FILE = "fp-lib-table"
+EXPORT_IMAGE_FOLDER = "images"
+EXPORT_CACHE_FOLDER = "cache"
+
+
 class Svg2ShenzhenExport(inkex.Effect):
     def __init__(self):
         """init the effect library and get options from gui"""
@@ -215,7 +220,6 @@ class Svg2ShenzhenExport(inkex.Effect):
         self.OptionParser.add_option("--openkicad", action="store", type="inkbool", dest="openkicad", default="true")
         self.OptionParser.add_option("--autoflatten", action="store", type="inkbool", dest="autoflatten", default="true")
         self.OptionParser.add_option("--debug", action="store", type="inkbool", dest="debug", default=False)
-
 
 
         self.doc_width = 0
@@ -240,13 +244,6 @@ class Svg2ShenzhenExport(inkex.Effect):
             # 'Edge.Cuts' : "Edge.Cuts"
         }
 
-        self.library_folder = "pcbart.pretty"
-        self.library_table_file = "fp-lib-table"
-        self.kicad_project_file = "pcbart.pro"
-        self.kicad_pcb_file = "pcbart.kicad_pcb"
-        self.kicad_mod_file = "pcbart.kicad_mod"
-        self.export_image_folder = "images"
-        self.export_cache_folder = "cache"
 
 
     def coordToKicad(self,XYCoord):
@@ -258,8 +255,8 @@ class Svg2ShenzhenExport(inkex.Effect):
     def setInkscapeScaling(self):
 
         root = self.document.getroot()
-        height = float(self.document.getroot().get('height').replace("mm", ""))
-        width = float(self.document.getroot().get('width').replace("mm", ""))
+        height = float(root.get('height').replace("mm", ""))
+        width = float(root.get('width').replace("mm", ""))
 
         self.doc_width = width
         self.doc_height = height
@@ -296,30 +293,35 @@ class Svg2ShenzhenExport(inkex.Effect):
         output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
+        name = self.get_name()
+        kicad_pcb_file = "{}.kicad_pcb".format(name)
+        library_folder = "{}.pretty".format(name)
+        kicad_project_file = "{}.pro".format(name)
+        kicad_mod_file = "{}.kicad_mod".format(name)
         kicad_mod_files = []
 
         #create pcb folder
         if not os.path.exists(os.path.join(output_path)):
             os.makedirs(os.path.join(output_path))
         #create library folder
-        if not os.path.exists(os.path.join(output_path, self.library_folder)):
-            os.makedirs(os.path.join(output_path, self.library_folder))
+        if not os.path.exists(os.path.join(output_path, library_folder)):
+            os.makedirs(os.path.join(output_path, library_folder))
         #create images folder
-        if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
-            os.makedirs(os.path.join(output_path, self.export_image_folder))
+        if not os.path.exists(os.path.join(output_path, EXPORT_IMAGE_FOLDER)):
+            os.makedirs(os.path.join(output_path, EXPORT_IMAGE_FOLDER))
         #create cache folder
-        if not os.path.exists(os.path.join(output_path, self.export_cache_folder)):
-            os.makedirs(os.path.join(output_path, self.export_cache_folder))
+        if not os.path.exists(os.path.join(output_path, EXPORT_CACHE_FOLDER)):
+            os.makedirs(os.path.join(output_path, EXPORT_CACHE_FOLDER))
 
         OUTPUT_FOLDER_PATH = output_path
-        LIBRARY_FOLDER_PATH = os.path.join(output_path, self.library_folder)
-        IMAGE_FOLDER_PATH = os.path.join(output_path, self.export_image_folder)
-        CACHE_FOLDER_PATH = os.path.join(output_path, self.export_cache_folder)
+        LIBRARY_FOLDER_PATH = os.path.join(output_path, library_folder)
+        IMAGE_FOLDER_PATH = os.path.join(output_path, EXPORT_IMAGE_FOLDER)
+        CACHE_FOLDER_PATH = os.path.join(output_path, EXPORT_CACHE_FOLDER)
 
-        KICAD_PCB_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.kicad_pcb_file )
-        KICAD_LIB_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.library_table_file )
-        KICAD_PRO_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.kicad_project_file )
-        KICAD_MOD_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.kicad_mod_file)
+        KICAD_PCB_PATH = os.path.join(OUTPUT_FOLDER_PATH, kicad_pcb_file )
+        KICAD_LIB_PATH = os.path.join(OUTPUT_FOLDER_PATH, LIBRARY_TABLE_FILE)
+        KICAD_PRO_PATH = os.path.join(OUTPUT_FOLDER_PATH, kicad_project_file )
+        KICAD_MOD_PATH = os.path.join(OUTPUT_FOLDER_PATH, kicad_mod_file)
 
         options_path = os.path.join(CACHE_FOLDER_PATH, 'svg2shenzhen-options')
 
@@ -354,7 +356,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             if os.path.exists(hash_sum_path):
               with open(hash_sum_path, 'r') as f:
                   prev_hash_sum = f.read()
-			
+
             # generate unique filename each layer
             temp_name = next(tempfile._get_candidate_names())
             layer_dest_svg_path = os.path.join(CACHE_FOLDER_PATH, temp_name)
@@ -407,7 +409,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             for kicad_file in kicad_mod_files:
                 with open(kicad_file, 'r') as f:
                     kicad_modules_string += f.read()
-            
+
             with open(KICAD_PCB_PATH, 'w') as f:
                 f.write(pcb_header)
                 f.write(kicad_modules_string)
@@ -416,7 +418,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                 f.write(pcb_footer)
 
             with open(KICAD_LIB_PATH, 'w') as f:
-                f.write(pcb_lib_table % (self.library_folder))
+                f.write(pcb_lib_table.format(name=name, folder=library_folder))
 
             with open(KICAD_PRO_PATH, 'w') as f:
                 f.write(pcb_project_file)
@@ -425,7 +427,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                 self.openKicad(KICAD_PCB_PATH)
 
         elif self.options.filetype == "kicad_module":
-            kicad_modules_string = "(module pcbart (layer F.Cu)"
+            kicad_modules_string = '(module "{}" (layer F.Cu)'.format(name)
             for kicad_file in kicad_mod_files:
                 with open(kicad_file, 'r') as f:
                     mod = f.readlines()[8:-1]
@@ -462,6 +464,13 @@ class Svg2ShenzhenExport(inkex.Effect):
         # returns a hash of the exported layer contents which can be used to
         # detect changes
         return hashlib.md5(ET.tostring(root)).hexdigest()
+
+
+    def get_name(self):
+        root = self.document.getroot()
+        docname = root.attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname']
+        return os.path.splitext(docname)[0]
+
 
     def get_layers(self, src):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
@@ -519,7 +528,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         if (self.options.debug):
-            inkex.debug(command)        
+            inkex.debug(command)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
@@ -527,7 +536,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         area_param = '-D' if self.options.crop else 'C'
         command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
         if (self.options.debug):
-            inkex.debug(command)   
+            inkex.debug(command)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
