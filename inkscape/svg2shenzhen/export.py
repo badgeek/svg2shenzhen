@@ -244,6 +244,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         self.kicad_pcb_file = "pcbart.kicad_pcb"
         self.kicad_mod_file = "pcbart.kicad_mod"
         self.export_image_folder = "images"
+        self.export_cache_folder = "cache"
 
 
     def coordToKicad(self,XYCoord):
@@ -289,22 +290,6 @@ class Svg2ShenzhenExport(inkex.Effect):
             webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
 
     def processExportLayer(self):
-        options_path = os.path.join(tempfile.gettempdir(), 'svg2shenzhen-options')
-
-        if os.path.exists(options_path):
-            with open(options_path, 'r') as f:
-                prev_options = pickle.load(f)
-            dpi_equal = prev_options.dpi == self.options.dpi
-            path_equal = prev_options.path == self.options.path
-            crop_equal = prev_options.crop == self.options.crop
-            filetype_equal = prev_options.filetype == self.options.filetype
-            threshold_equal = prev_options.threshold == self.options.threshold
-            ignore_hashes = not dpi_equal or not path_equal or not crop_equal or not filetype_equal or not threshold_equal
-        else:
-            ignore_hashes = True
-
-        with open(options_path, 'w') as f:
-            pickle.dump(self.options, f)
 
         output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
@@ -323,6 +308,25 @@ class Svg2ShenzhenExport(inkex.Effect):
         if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
             os.makedirs(os.path.join(output_path, self.export_image_folder))
 
+        #create cache folder
+        if not os.path.exists(os.path.join(output_path, self.export_cache_folder)):
+            os.makedirs(os.path.join(output_path, self.export_cache_folder))
+        options_path = os.path.join(CACHE_FOLDER_LOCATION, 'svg2shenzhen-options')
+
+        if os.path.exists(options_path):
+            with open(options_path, 'r') as f:
+                prev_options = pickle.load(f)
+            dpi_equal = prev_options.dpi == self.options.dpi
+            path_equal = prev_options.path == self.options.path
+            crop_equal = prev_options.crop == self.options.crop
+            filetype_equal = prev_options.filetype == self.options.filetype
+            threshold_equal = prev_options.threshold == self.options.threshold
+            ignore_hashes = not dpi_equal or not path_equal or not crop_equal or not filetype_equal or not threshold_equal
+        else:
+            ignore_hashes = True
+
+        with open(options_path, 'w') as f:
+            pickle.dump(self.options, f)
         layer_arguments = []
         temp_svg_paths = []
         for (layer_id, layer_label, layer_type) in layers:
