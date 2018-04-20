@@ -204,7 +204,7 @@ IDENTITY_MATRIX = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 LIBRARY_TABLE_FILE = "fp-lib-table"
 EXPORT_IMAGE_FOLDER = "images"
-EXPORT_CACHE_FOLDER = "cache"
+EXPORT_CACHE_FOLDER = ".svg2shenzhen-cache"
 
 
 class Svg2ShenzhenExport(inkex.Effect):
