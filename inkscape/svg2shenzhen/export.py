@@ -305,22 +305,21 @@ class Svg2ShenzhenExport(inkex.Effect):
         #create images folder
         if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
             os.makedirs(os.path.join(output_path, self.export_image_folder))
-
         #create cache folder
         if not os.path.exists(os.path.join(output_path, self.export_cache_folder)):
             os.makedirs(os.path.join(output_path, self.export_cache_folder))
 
-        OUTPUT_FOLDER_LOCATION = output_path
-        LIBRARY_FOLDER_LOCATION = os.path.join(output_path, self.library_folder)
-        IMAGE_FOLDER_LOCATION = os.path.join(output_path, self.export_image_folder)
-        CACHE_FOLDER_LOCATION = os.path.join(output_path, self.export_cache_folder)
+        OUTPUT_FOLDER_PATH = output_path
+        LIBRARY_FOLDER_PATH = os.path.join(output_path, self.library_folder)
+        IMAGE_FOLDER_PATH = os.path.join(output_path, self.export_image_folder)
+        CACHE_FOLDER_PATH = os.path.join(output_path, self.export_cache_folder)
 
-        KICAD_PCB_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.kicad_pcb_file )
-        KICAD_LIB_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.library_table_file )
-        KICAD_PRO_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.kicad_project_file )
-        KICAD_MOD_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.kicad_mod_file)
+        KICAD_PCB_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.kicad_pcb_file )
+        KICAD_LIB_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.library_table_file )
+        KICAD_PRO_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.kicad_project_file )
+        KICAD_MOD_PATH = os.path.join(OUTPUT_FOLDER_PATH, self.kicad_mod_file)
 
-        options_path = os.path.join(CACHE_FOLDER_LOCATION, 'svg2shenzhen-options')
+        options_path = os.path.join(CACHE_FOLDER_PATH, 'svg2shenzhen-options')
 
         if os.path.exists(options_path):
             with open(options_path, 'r') as f:
@@ -347,7 +346,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             if ("-invert" in layer_label):
                 layer_label = layer_label.replace("-invert", "")
                 invert = "false"
-            hash_sum_path = os.path.join(CACHE_FOLDER_LOCATION, 'svg2shenzhen-{}-{}-{}-{}'.format(layer_id, layer_label, layer_type, invert))
+            hash_sum_path = os.path.join(CACHE_FOLDER_PATH, 'svg2shenzhen-{}-{}-{}-{}'.format(layer_id, layer_label, layer_type, invert))
 
             prev_hash_sum = None
             if os.path.exists(hash_sum_path):
@@ -356,15 +355,15 @@ class Svg2ShenzhenExport(inkex.Effect):
 			
             # generate unique filename each layer
             temp_name = next(tempfile._get_candidate_names())
-            layer_dest_svg_path = os.path.join(CACHE_FOLDER_LOCATION, temp_name)
+            layer_dest_svg_path = os.path.join(CACHE_FOLDER_PATH, temp_name)
             hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
             temp_svg_paths.append(layer_dest_svg_path)
 
             if self.options.filetype == "kicad_pcb" or self.options.filetype == "kicad_module":
-                layer_dest_png_path = os.path.join(IMAGE_FOLDER_LOCATION,  "%s_%s.png" % (layer_label, layer_id))
+                layer_dest_png_path = os.path.join(IMAGE_FOLDER_PATH,  "%s_%s.png" % (layer_label, layer_id))
             else:
-                layer_dest_png_path = os.path.join(IMAGE_FOLDER_LOCATION, "%s_%s.png" % (layer_label, layer_id))
-            layer_dest_kicad_path = os.path.join(LIBRARY_FOLDER_LOCATION, "%s_%s.kicad_mod" % (layer_label, layer_id))
+                layer_dest_png_path = os.path.join(IMAGE_FOLDER_PATH, "%s_%s.png" % (layer_label, layer_id))
+            layer_dest_kicad_path = os.path.join(LIBRARY_FOLDER_PATH, "%s_%s.kicad_mod" % (layer_label, layer_id))
             kicad_mod_files.append(layer_dest_kicad_path)
 
 
