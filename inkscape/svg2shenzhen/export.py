@@ -281,35 +281,6 @@ class Svg2ShenzhenExport(inkex.Effect):
             root.attrib['width'] = str(height) + "mm"
             root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
 
-    def createLayer(self, layer_name):
-        svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
-        layer = inkex.etree.SubElement(svg, 'g')
-        layer.set(inkex.addNS('label', 'inkscape'), '%s' % layer_name)
-        layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
-
-    def createWhitebg(self, layer):
-        rect = inkex.etree.Element(inkex.addNS('rect','svg'))
-        rect.set('x', "0")
-        rect.set('y', "0")
-        rect.set('width', str(self.doc_width/self.bb_scaling))
-        rect.set('height', str(self.doc_height/self.bb_scaling))
-        style = {'fill' : '#FFFFFF', 'fill-opacity' : '1', 'stroke': 'none'}
-        rect.set('style', formatStyle(style))
-        layer.append(rect)
-
-    def prepareDocument(self):
-        layer = self.createLayer("[fixed] BG")
-        layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true')
-        self.createWhitebg(layer)
-        self.createLayer("Edge.Cuts")
-        self.createLayer("B.Cu-disabled")
-        self.createLayer("B.Mask-disabled")
-        self.createLayer("B.Silk-disabled")
-        self.createLayer("F.Cu")
-        self.createLayer("F.Mask-disabled")
-        self.createLayer("F.Silk-disabled")
-        self.createLayer("Drill")
-
     def effect(self):
         self.setDocumentSquare()
         self.setInkscapeScaling()
