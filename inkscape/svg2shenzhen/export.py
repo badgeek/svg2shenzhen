@@ -299,11 +299,9 @@ class Svg2ShenzhenExport(inkex.Effect):
         #create pcb folder
         if not os.path.exists(os.path.join(output_path)):
             os.makedirs(os.path.join(output_path))
-
         #create library folder
         if not os.path.exists(os.path.join(output_path, self.library_folder)):
             os.makedirs(os.path.join(output_path, self.library_folder))
-
         #create images folder
         if not os.path.exists(os.path.join(output_path, self.export_image_folder)):
             os.makedirs(os.path.join(output_path, self.export_image_folder))
@@ -311,6 +309,17 @@ class Svg2ShenzhenExport(inkex.Effect):
         #create cache folder
         if not os.path.exists(os.path.join(output_path, self.export_cache_folder)):
             os.makedirs(os.path.join(output_path, self.export_cache_folder))
+
+        OUTPUT_FOLDER_LOCATION = output_path
+        LIBRARY_FOLDER_LOCATION = os.path.join(output_path, self.library_folder)
+        IMAGE_FOLDER_LOCATION = os.path.join(output_path, self.export_image_folder)
+        CACHE_FOLDER_LOCATION = os.path.join(output_path, self.export_cache_folder)
+
+        KICAD_PCB_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.kicad_pcb_file )
+        KICAD_LIB_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.library_table_file )
+        KICAD_PRO_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.kicad_project_file )
+        KICAD_MOD_PATH = os.path.join(OUTPUT_FOLDER_LOCATION, self.kicad_mod_file)
+
         options_path = os.path.join(CACHE_FOLDER_LOCATION, 'svg2shenzhen-options')
 
         if os.path.exists(options_path):
@@ -327,6 +336,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         with open(options_path, 'w') as f:
             pickle.dump(self.options, f)
+
         layer_arguments = []
         temp_svg_paths = []
         for (layer_id, layer_label, layer_type) in layers:
@@ -337,23 +347,24 @@ class Svg2ShenzhenExport(inkex.Effect):
             if ("-invert" in layer_label):
                 layer_label = layer_label.replace("-invert", "")
                 invert = "false"
-            hash_sum_path = os.path.join(tempfile.gettempdir(), 'svg2shenzhen-{}-{}-{}-{}'.format(layer_id, layer_label, layer_type, invert))
+            hash_sum_path = os.path.join(CACHE_FOLDER_LOCATION, 'svg2shenzhen-{}-{}-{}-{}'.format(layer_id, layer_label, layer_type, invert))
 
             prev_hash_sum = None
             if os.path.exists(hash_sum_path):
               with open(hash_sum_path, 'r') as f:
                   prev_hash_sum = f.read()
-
-            fd, layer_dest_svg_path = tempfile.mkstemp()
-            os.close(fd)
+			
+            # generate unique filename each layer
+            temp_name = next(tempfile._get_candidate_names())
+            layer_dest_svg_path = os.path.join(CACHE_FOLDER_LOCATION, temp_name)
             hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
             temp_svg_paths.append(layer_dest_svg_path)
 
             if self.options.filetype == "kicad_pcb" or self.options.filetype == "kicad_module":
-                layer_dest_png_path = os.path.join(output_path,self.export_image_folder,  "%s_%s.png" % (layer_label, layer_id))
+                layer_dest_png_path = os.path.join(IMAGE_FOLDER_LOCATION,  "%s_%s.png" % (layer_label, layer_id))
             else:
-                layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (layer_label, layer_id))
-            layer_dest_kicad_path = os.path.join(output_path, self.library_folder, "%s_%s.kicad_mod" % (layer_label, layer_id))
+                layer_dest_png_path = os.path.join(IMAGE_FOLDER_LOCATION, "%s_%s.png" % (layer_label, layer_id))
+            layer_dest_kicad_path = os.path.join(LIBRARY_FOLDER_LOCATION, "%s_%s.kicad_mod" % (layer_label, layer_id))
             kicad_mod_files.append(layer_dest_kicad_path)
 
 
@@ -395,24 +406,22 @@ class Svg2ShenzhenExport(inkex.Effect):
             for kicad_file in kicad_mod_files:
                 with open(kicad_file, 'r') as f:
                     kicad_modules_string += f.read()
-            kicad_pcb_path = os.path.join(output_path, self.kicad_pcb_file )
-            kicad_lib_path = os.path.join(output_path, self.library_table_file )
-            kicad_pro_path = os.path.join(output_path, self.kicad_project_file )
-            with open(kicad_pcb_path, 'w') as f:
+            
+            with open(KICAD_PCB_PATH, 'w') as f:
                 f.write(pcb_header)
                 f.write(kicad_modules_string)
                 f.write(kicad_edgecut_string)
                 f.write(kicad_drill_string)
                 f.write(pcb_footer)
 
-            with open(kicad_lib_path, 'w') as f:
+            with open(KICAD_LIB_PATH, 'w') as f:
                 f.write(pcb_lib_table % (self.library_folder))
 
-            with open(kicad_pro_path, 'w') as f:
+            with open(KICAD_PRO_PATH, 'w') as f:
                 f.write(pcb_project_file)
 
             if (self.options.openkicad):
-                self.openKicad(kicad_pcb_path)
+                self.openKicad(KICAD_PCB_PATH)
 
         elif self.options.filetype == "kicad_module":
             kicad_modules_string = "(module pcbart (layer F.Cu)"
@@ -423,8 +432,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             kicad_modules_string += kicad_edgecut_string
             kicad_modules_string += kicad_drill_string
             kicad_modules_string += ")"
-            kicad_mod_path = os.path.join(output_path, self.kicad_mod_file)
-            with open(kicad_mod_path, 'w') as f:
+            with open(KICAD_MOD_PATH, 'w') as f:
                 f.write(kicad_modules_string)
 
 
@@ -508,13 +516,13 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "'%s' '%s' '%s' '%s' '%s' '%s' '%s'" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     def exportToPng(self, svg_path, output_path):
         area_param = '-D' if self.options.crop else 'C'
-        command = "inkscape '%s' -d '%s' -e '%s' '%s'" % (area_param, self.options.dpi, output_path, svg_path)
+        command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
