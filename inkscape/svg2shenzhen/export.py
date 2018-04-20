@@ -466,12 +466,10 @@ class Svg2ShenzhenExport(inkex.Effect):
         # detect changes
         return hashlib.md5(ET.tostring(root)).hexdigest()
 
-
     def get_name(self):
         root = self.document.getroot()
-        docname = root.attrib['{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname']
+        docname = root.get('{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname')
         return os.path.splitext(docname)[0]
-
 
     def get_layers(self, src):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
