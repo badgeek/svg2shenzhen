@@ -289,8 +289,9 @@ class Svg2ShenzhenExport(inkex.Effect):
             webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
 
     def processExportLayer(self):
+        options = self.options
 
-        output_path = os.path.expanduser(self.options.path)
+        output_path = os.path.expanduser(options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
         name = self.get_name()
@@ -323,17 +324,17 @@ class Svg2ShenzhenExport(inkex.Effect):
         if os.path.exists(options_path):
             with open(options_path, 'r') as f:
                 prev_options = pickle.load(f)
-            dpi_equal = prev_options.dpi == self.options.dpi
-            path_equal = prev_options.path == self.options.path
-            crop_equal = prev_options.crop == self.options.crop
-            filetype_equal = prev_options.filetype == self.options.filetype
-            threshold_equal = prev_options.threshold == self.options.threshold
+            dpi_equal = prev_options.dpi == options.dpi
+            path_equal = prev_options.path == options.path
+            crop_equal = prev_options.crop == options.crop
+            filetype_equal = prev_options.filetype == options.filetype
+            threshold_equal = prev_options.threshold == options.threshold
             ignore_hashes = not dpi_equal or not path_equal or not crop_equal or not filetype_equal or not threshold_equal
         else:
             ignore_hashes = True
 
         with open(options_path, 'w') as f:
-            pickle.dump(self.options, f)
+            pickle.dump(options, f)
 
         layer_arguments = []
         temp_svg_paths = []
@@ -358,7 +359,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
             temp_svg_paths.append(layer_dest_svg_path)
 
-            if self.options.filetype == "kicad_pcb" or self.options.filetype == "kicad_module":
+            if options.filetype == "kicad_pcb" or options.filetype == "kicad_module":
                 layer_dest_png_path = os.path.join(image_folder_path,  "%s_%s.png" % (layer_label, layer_id))
             else:
                 layer_dest_png_path = os.path.join(image_folder_path, "%s_%s.png" % (layer_label, layer_id))
@@ -384,7 +385,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         for layer_dest_svg_path in temp_svg_paths:
             os.remove(layer_dest_svg_path)
 
-        if self.options.filetype == "kicad_pcb" or self.options.filetype == "kicad_module":
+        if options.filetype == "kicad_pcb" or options.filetype == "kicad_module":
             for i in range(0, len(layer_arguments), EXPORT_KICAD_MAX_PROCESSES):
                 processes = []
                 for _, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert in layer_arguments[i:i+EXPORT_KICAD_MAX_PROCESSES]:
@@ -396,10 +397,10 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             return
 
-        kicad_edgecut_string = self.exportEdgeCut(kicad_mod = self.options.filetype == "kicad_module")
-        kicad_drill_string = self.exportDrill(kicad_mod = self.options.filetype == "kicad_module")
+        kicad_edgecut_string = self.exportEdgeCut(kicad_mod = options.filetype == "kicad_module")
+        kicad_drill_string = self.exportDrill(kicad_mod = options.filetype == "kicad_module")
 
-        if self.options.filetype == "kicad_pcb":
+        if options.filetype == "kicad_pcb":
             kicad_modules_string = ""
             for kicad_file in kicad_mod_files:
                 with open(kicad_file, 'r') as f:
@@ -418,10 +419,10 @@ class Svg2ShenzhenExport(inkex.Effect):
             with open(kicad_pro_path, 'w') as f:
                 f.write(PCB_PROJECT_FILE)
 
-            if (self.options.openkicad):
+            if (options.openkicad):
                 self.openKicad(kicad_pcb_path)
 
-        elif self.options.filetype == "kicad_module":
+        elif options.filetype == "kicad_module":
             kicad_modules_string = '(module "{}" (layer F.Cu)'.format(name)
             for kicad_file in kicad_mod_files:
                 with open(kicad_file, 'r') as f:
