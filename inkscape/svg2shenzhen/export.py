@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 import pickle
 
 
-EXPORT_PNG_MAX_PROCESSES = 20
+EXPORT_PNG_MAX_PROCESSES = 1
 EXPORT_KICAD_MAX_PROCESSES = 2
 
 pcb_header = '''
