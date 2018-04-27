@@ -618,12 +618,12 @@ class Svg2ShenzhenExport(inkex.Effect):
         i = 0
 
         if kicad_mod:
-            pad_template = "(pad {n} thru_hole circle (at {x} {y}) (size 1.99898 1.99898) (drill {d}) (layers *.Cu *.Mask))\n"
+            pad_template = "(pad {n} thru_hole circle (at {x} {y}) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))\n"
         else:
             pad_template = """
                 (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
                     (at {x} {y})
-                    (pad {n} thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill {d}) (layers *.Cu *.Mask))
+                    (pad {n} thru_hole circle (at 0 0) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))
                 )
             """
 
@@ -655,6 +655,8 @@ class Svg2ShenzhenExport(inkex.Effect):
                 cy = float(node.get('cy'))
 
                 radius = float(node.get('r'))
+                drill_size = radius * 2
+
                 t = node.get('transform')
 
                 pt = [cx, cy]
@@ -665,16 +667,10 @@ class Svg2ShenzhenExport(inkex.Effect):
                 else:
                     trans = layer_m
 
-                drill_size = node.get('drill')
-
-                if (not drill_size):
-                    drill_size = 0.8001
-
                 simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
-
-                kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=float(drill_size))
+                kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=drill_size)
 
             return kicad_drill_string
 
