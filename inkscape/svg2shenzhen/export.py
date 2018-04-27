@@ -469,6 +469,8 @@ class Svg2ShenzhenExport(inkex.Effect):
     def get_name(self):
         root = self.document.getroot()
         docname = root.get('{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname')
+        if docname is None:
+            return 'drawing'
         return os.path.splitext(docname)[0]
 
     def get_layers(self, src):
