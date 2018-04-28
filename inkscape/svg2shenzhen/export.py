@@ -627,18 +627,9 @@ class Svg2ShenzhenExport(inkex.Effect):
                 )
             """
 
-        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
+        layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Drill"]'
+
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
-            i += 1
-
-            layer_name = (layer.attrib[label_attrib_name])
-
-            if layer_name != "Drill":
-                continue
-
 
             layer_trans = layer.get('transform')
             if layer_trans:
@@ -646,10 +637,10 @@ class Svg2ShenzhenExport(inkex.Effect):
             else:
                 layer_m = IDENTITY_MATRIX
 
-            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:circle') % i
+            nodePath = 'descendant::svg:circle'
 
             count = 0
-            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+            for node in layer.xpath(nodePath, namespaces=inkex.NSS):
                 count = count + 1
                 cx = float(node.get('cx'))
                 cy = float(node.get('cy'))
