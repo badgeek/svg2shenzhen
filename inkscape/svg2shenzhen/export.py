@@ -504,14 +504,13 @@ class Svg2ShenzhenExport(inkex.Effect):
         platform_system = platform.system()
 
         if (platform_system == 'Darwin'):
-            command = "open %s &" % (kicad_file_path)
+            command = "open %s" % (kicad_file_path)
         elif (platform_system == 'Linux'):
-            command = "xdg-open %s &" % (kicad_file_path)
+            command = "xdg-open %s" % (kicad_file_path)
         else:
-            command = "start %s &" % (kicad_file_path)
+            command = "start %s" % (kicad_file_path)
 
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 
