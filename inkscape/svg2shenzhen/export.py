@@ -666,23 +666,10 @@ class Svg2ShenzhenExport(inkex.Effect):
             return kicad_drill_string
 
     def flatten_bezier(self):
-        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
-        i = 0
+        layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Edge.Cuts"]'
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
-            i += 1
-
-            layer_name = (layer.attrib[label_attrib_name])
-
-            if layer_name != "Edge.Cuts":
-                continue
-
-            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
-            count = 0
-
-            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+            nodePath = 'descendant::svg:path'
+            for node in layer.xpath(nodePath, namespaces=inkex.NSS):
                 if node.tag == inkex.addNS('path','svg'):
                     d = node.get('d')
                     p = cubicsuperpath.parsePath(d)
@@ -695,8 +682,8 @@ class Svg2ShenzhenExport(inkex.Effect):
                             if first:
                                 cmd = 'M'
                             first = False
-                            np.append([cmd,[csp[1][0],csp[1][1]]])
-                            node.set('d',simplepath.formatPath(np))
+                            np.append([cmd, [csp[1][0], csp[1][1]]])
+                            node.set('d', simplepath.formatPath(np))
 
 def _main():
     e = Svg2ShenzhenExport()
