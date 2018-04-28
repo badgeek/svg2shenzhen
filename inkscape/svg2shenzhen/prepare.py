@@ -32,8 +32,8 @@ class Svg2ShenzhenPrepare(inkex.Effect):
     def setInkscapeScaling(self):
 
         root = self.document.getroot()
-        height = float(self.document.getroot().get('height').replace("mm", ""))
-        width = float(self.document.getroot().get('width').replace("mm", ""))
+        height = float(root.get('height').replace("mm", ""))
+        width = float(root.get('width').replace("mm", ""))
 
         viewbox = root.attrib['viewBox'].split(' ')
         viewbox_h = float(viewbox[-1])
@@ -48,8 +48,6 @@ class Svg2ShenzhenPrepare(inkex.Effect):
 
     def setDocumentSquare(self, width):
         root = self.document.getroot()
-        # height = float(root.attrib['height'].replace("mm", ""))
-        # width =  float(root.attrib['width'].replace("mm", ""))
         root.attrib['width'] = str(width) + "mm"
         root.attrib['height'] = str(width) + "mm"
         root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
@@ -127,11 +125,17 @@ class Svg2ShenzhenPrepare(inkex.Effect):
 
         doc_view.append(grid)
 
+    def setDefaultUnits(self):
+        # just a convenience so that when you draw you will use mm by default
+        namedview = self.document.find('sodipodi:namedview', namespaces=inkex.NSS)
+        namedview.attrib['{http://www.inkscape.org/namespaces/inkscape}document-units'] = 'mm'
+
     def effect(self):
         self.setDocumentSquare(self.options.docwidth)
         self.setInkscapeScaling()
         self.prepareDocument()
         self.setDocumentGrid()
+        self.setDefaultUnits()
 
 
     def export_layers(self, dest, show):
