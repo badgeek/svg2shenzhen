@@ -618,27 +618,18 @@ class Svg2ShenzhenExport(inkex.Effect):
         i = 0
 
         if kicad_mod:
-            pad_template = "(pad {n} thru_hole circle (at {x} {y}) (size 1.99898 1.99898) (drill {d}) (layers *.Cu *.Mask))\n"
+            pad_template = "(pad {n} thru_hole circle (at {x} {y}) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))\n"
         else:
             pad_template = """
                 (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
                     (at {x} {y})
-                    (pad {n} thru_hole circle (at 0 0) (size 1.99898 1.99898) (drill {d}) (layers *.Cu *.Mask))
+                    (pad {n} thru_hole circle (at 0 0) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))
                 )
             """
 
-        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
+        layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Drill"]'
+
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
-            i += 1
-
-            layer_name = (layer.attrib[label_attrib_name])
-
-            if layer_name != "Drill":
-                continue
-
 
             layer_trans = layer.get('transform')
             if layer_trans:
@@ -646,15 +637,17 @@ class Svg2ShenzhenExport(inkex.Effect):
             else:
                 layer_m = IDENTITY_MATRIX
 
-            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:circle') % i
+            nodePath = 'descendant::svg:circle'
 
             count = 0
-            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+            for node in layer.xpath(nodePath, namespaces=inkex.NSS):
                 count = count + 1
                 cx = float(node.get('cx'))
                 cy = float(node.get('cy'))
 
                 radius = float(node.get('r'))
+                drill_size = radius * 2
+
                 t = node.get('transform')
 
                 pt = [cx, cy]
@@ -665,37 +658,18 @@ class Svg2ShenzhenExport(inkex.Effect):
                 else:
                     trans = layer_m
 
-                drill_size = node.get('drill')
-
-                if (not drill_size):
-                    drill_size = 0.8001
-
                 simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
-
-                kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=float(drill_size))
+                kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=drill_size)
 
             return kicad_drill_string
 
     def flatten_bezier(self):
-        layerPath = '//svg:g[@inkscape:groupmode="layer"]'
-        i = 0
+        layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Edge.Cuts"]'
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
-            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
-            if label_attrib_name not in layer.attrib:
-                continue
-            i += 1
-
-            layer_name = (layer.attrib[label_attrib_name])
-
-            if layer_name != "Edge.Cuts":
-                continue
-
-            nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
-            count = 0
-
-            for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
+            nodePath = 'descendant::svg:path'
+            for node in layer.xpath(nodePath, namespaces=inkex.NSS):
                 if node.tag == inkex.addNS('path','svg'):
                     d = node.get('d')
                     p = cubicsuperpath.parsePath(d)
@@ -708,8 +682,8 @@ class Svg2ShenzhenExport(inkex.Effect):
                             if first:
                                 cmd = 'M'
                             first = False
-                            np.append([cmd,[csp[1][0],csp[1][1]]])
-                            node.set('d',simplepath.formatPath(np))
+                            np.append([cmd, [csp[1][0], csp[1][1]]])
+                            node.set('d', simplepath.formatPath(np))
 
 def _main():
     e = Svg2ShenzhenExport()

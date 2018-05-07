@@ -27,8 +27,8 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 ## Tips
 
-1. For Edge.Cut Layer, polygon or object need to be converted to path without fill and only outline
-2. For Drill layer, place Circle object and it will be converted into drill pad in kicad
+1. For Edge.Cut layers, you need to convert any polygons or objects to paths with only an outline, no fill. Don't use any groups on Edge.Cut layers and if you have paths with inner cut outs break them apart into separate paths.
+2. For Drill layers, place circle objects and they will be converted into drill pads in KiCad with the same diameter. These drills will not have annular rings unless you also add copper to the F.Cu and B.Cu layers. Don't use any groups on Drill layers either.
 
 ## Known Bugs
 
