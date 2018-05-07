@@ -510,8 +510,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             command = "start %s" % (kicad_file_path)
 
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 
