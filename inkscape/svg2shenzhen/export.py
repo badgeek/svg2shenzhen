@@ -230,20 +230,33 @@ class Svg2ShenzhenExport(inkex.Effect):
         self.bb_scaling = 0
 
         self.layer_map = {
-            #'inkscape-name' : kicad-name,
-            'F.Cu' :    "F.Cu",
-            'B.Cu' :    "B.Cu",
+            #'inkscape-name' : 'kicad-name',
+            'F.Cu'      : 'F.Cu',
+            'B.Cu'      : 'B.Cu',
+            'B.Adhes'   : 'B.Adhes',
+            'F.Adhes'   : 'F.Adhes',
+            'B.Paste'   : 'B.Paste',
+            'F.Paste'   : 'F.Paste',
+            'B.SilkS'   : 'B.SilkS',
+            'F.SilkS'   : 'F.SilkS',
+            'B.Mask'    : 'B.Mask',
+            'F.Mask'    : 'F.Mask',
+            'Dwgs.User' : 'Dwgs.User',
+            'Cmts.User' : 'Cmts.User',
+            'Eco1.User' : 'Eco1.User',
+            'Eco2.User' : 'Eco2.User',
+            'Edge.Cuts' : 'Edge.Cuts',
+            'Margin'    : 'Margin',
+            'B.CrtYd'   : 'B.CrtYd',
+            'F.CrtYd'   : 'F.CrtYd',
+            'B.Fab'     : 'B.Fab',
+            'F.Fab'     : 'F.Fab',
             # 'Adhes' : "{}.Adhes",
             # 'Paste' : "{}.Paste",
-            'F.Silk' : "F.Silk",
-            'B.Silk' : "B.Silk",
-            'F.Mask' :  "F.Mask",
-            'B.Mask' :  "B.Mask",
             # 'CrtYd' : "{}.CrtYd",
             # 'Fab' :   "{}.Fab",
             # 'Edge.Cuts' : "Edge.Cuts"
         }
-
 
 
     def coordToKicad(self,XYCoord):
