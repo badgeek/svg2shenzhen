@@ -410,8 +410,14 @@ class Svg2ShenzhenExport(inkex.Effect):
                     #export layer png to kicad
                     p = self.exportToKicad(layer_dest_png_path, layer_dest_kicad_path, layer_label, invert)
                     processes.append(p)
-                for p in processes:
                     p.wait()
+
+                    # Open generated file to replace the wrong layer string
+                    mod = open(layer_dest_kicad_path, "r").read()
+                    mod = mod.replace('F.Cu', layer_label)
+                    open(layer_dest_kicad_path, "w").write(mod)
+
+
         else:
             return
 
