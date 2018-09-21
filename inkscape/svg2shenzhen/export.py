@@ -227,7 +227,8 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         self.bb_width_center = 0
         self.bb_height_center = 0
-        self.bb_scaling = 0
+        self.bb_scaling_w = 0
+        self.bb_scaling_h = 0
 
         self.layer_map = {
             #'inkscape-name' : kicad-name,
@@ -248,8 +249,8 @@ class Svg2ShenzhenExport(inkex.Effect):
 
     def coordToKicad(self,XYCoord):
         return [
-            (XYCoord[0]-self.bb_width_center)/self.bb_scaling,
-            (XYCoord[1]-self.bb_height_center)/self.bb_scaling,
+            (XYCoord[0]-self.bb_width_center)/self.bb_scaling_w,
+            (XYCoord[1]-self.bb_height_center)/self.bb_scaling_h,
         ]
 
     def setInkscapeScaling(self):
@@ -267,7 +268,8 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         self.bb_width_center = viewbox_w/2
         self.bb_height_center = viewbox_h/2
-        self.bb_scaling = viewbox_h/height
+        self.bb_scaling_w = viewbox_w/width
+        self.bb_scaling_h = viewbox_h/height
 
     def setDocumentSquare(self):
         root = self.document.getroot()
@@ -282,11 +284,11 @@ class Svg2ShenzhenExport(inkex.Effect):
             root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
 
     def effect(self):
-        self.setDocumentSquare()
+        # self.setDocumentSquare()
         self.setInkscapeScaling()
         self.processExportLayer()
-        if (self.options.openfactory):
-            webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
+        # if (self.options.openfactory):
+            # webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
 
     def processExportLayer(self):
         options = self.options
