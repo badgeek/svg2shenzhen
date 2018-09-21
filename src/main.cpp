@@ -218,11 +218,10 @@ int main(int argc, char* argv[])
     {
         for( int x = 0; x < width; x++ )
         {
-            int start = (y * height * 4) + x * 4;
-            unsigned char pix = image[start+1];
+            unsigned char pix = image[4 * width * y + 4 * x + 1];
 
             //transparent = white
-            if (image[start+3] == 0)
+            if ( image[4 * width * y + 4 * x + 3] == 0)
                 pix = 255;
 
             //grayscale
