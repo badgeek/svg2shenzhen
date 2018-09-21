@@ -18,15 +18,17 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("--docwidth", action="store", type="float", dest="docwidth", default=0.0)
+        self.OptionParser.add_option("--docheight", action="store", type="float", dest="docheight", default=0.0)
 
         self.bb_width_center = 0
         self.bb_height_center = 0
-        self.bb_scaling = 0
+        self.bb_scaling_h = 0
+        self.bb_scaling_w = 0
 
     def coordToKicad(self,XYCoord):
         return [
-            (XYCoord[0]-self.bb_width_center)/self.bb_scaling,
-            (XYCoord[1]-self.bb_height_center)/self.bb_scaling,
+            (XYCoord[0]-self.bb_width_center)/self.bb_scaling_w,
+            (XYCoord[1]-self.bb_height_center)/self.bb_scaling_h,
         ]
 
     def setInkscapeScaling(self):
@@ -34,7 +36,7 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         root = self.document.getroot()
         height = float(root.get('height').replace("mm", ""))
         width = float(root.get('width').replace("mm", ""))
-
+        root.attrib['viewBox'] = "0 0 " + str(width) + " " + str(height)
         viewbox = root.attrib['viewBox'].split(' ')
         viewbox_h = float(viewbox[-1])
         viewbox_w = float(viewbox[-2])
@@ -43,13 +45,14 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         self.doc_height = height
         self.bb_width_center = viewbox_w/2
         self.bb_height_center = viewbox_h/2
-        self.bb_scaling = viewbox_h/height
+        self.bb_scaling_h = viewbox_h/height
+        self.bb_scaling_w = viewbox_w/width
 
 
-    def setDocumentSquare(self, width):
+    def setDocumentSquare(self, width, height):
         root = self.document.getroot()
         root.attrib['width'] = str(width) + "mm"
-        root.attrib['height'] = str(width) + "mm"
+        root.attrib['height'] = str(height) + "mm"
         root.attrib['viewBox'] = "0 0 %f %f" % (width, width)
 
 
@@ -64,8 +67,8 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         rect = inkex.etree.Element(inkex.addNS('rect','svg'))
         rect.set('x', "0")
         rect.set('y', "0")
-        rect.set('width', str(self.doc_width/self.bb_scaling))
-        rect.set('height', str(self.doc_height/self.bb_scaling))
+        rect.set('width', str(self.doc_width/self.bb_scaling_w))
+        rect.set('height', str(self.doc_height/self.bb_scaling_h))
         style = {'fill' : '#FFFFFF', 'fill-opacity' : '1', 'stroke': 'none'}
         rect.set('style', formatStyle(style))
         return rect
@@ -131,7 +134,7 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         namedview.attrib['{http://www.inkscape.org/namespaces/inkscape}document-units'] = 'mm'
 
     def effect(self):
-        self.setDocumentSquare(self.options.docwidth)
+        self.setDocumentSquare(self.options.docwidth, self.options.docheight)
         self.setInkscapeScaling()
         self.prepareDocument()
         self.setDocumentGrid()

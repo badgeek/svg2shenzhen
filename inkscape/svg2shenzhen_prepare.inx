@@ -5,6 +5,8 @@
     <dependency type="executable" location="extensions">svg2shenzhen/prepare.py</dependency>
 	<param name="help" type="description">Prepare document for Kicad Export</param>
     <param name="docwidth" type="float" min="0.0" max="100000.0" _gui-text="Document width (mm)">100</param>
+    <param name="docheight" type="float" min="0.0" max="100000.0" _gui-text="Document height (mm)">100</param>
+
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu _name="Prepare Document">
