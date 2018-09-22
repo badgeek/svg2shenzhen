@@ -77,6 +77,16 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         layers = []
 
+        root = self.document.getroot()
+
+        #remove "Layer 1"
+        for layer in svg_layers:
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
+            if (layer.attrib[label_attrib_name] == "Layer 1"):
+                root.remove(layer)
+
         for layer in svg_layers:
             label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
             if label_attrib_name not in layer.attrib:
