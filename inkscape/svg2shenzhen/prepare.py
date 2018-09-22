@@ -9,8 +9,11 @@ import tempfile
 import shutil
 import copy
 import simplepath, simpletransform
+
 from simplestyle import *
 from copy import deepcopy
+from io import BytesIO
+from lxml import etree
 
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
