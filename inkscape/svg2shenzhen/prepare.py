@@ -10,6 +10,7 @@ import shutil
 import copy
 import simplepath, simpletransform
 from simplestyle import *
+from copy import deepcopy
 
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
