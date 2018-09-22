@@ -73,6 +73,34 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         rect.set('style', formatStyle(style))
         return rect
 
+    def findLayer(self, layerName):
+        svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
+        for layer in svg_layers:
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
+            if label_attrib_name not in layer.attrib:
+                continue
+            if (layer.attrib[label_attrib_name] == layerName):
+                return layer
+        return False
+
+    def addStamp(self,layer, textStr):
+
+        # Create text element
+        text = inkex.etree.Element(inkex.addNS('text','svg'))
+        text.text = str(textStr)
+
+        # Set text position to center of document.
+        text.set('x', str(self.doc_width / 2))
+        text.set('y', str(self.doc_height / 2))
+
+        # Center text horizontally with CSS style.
+        style = {'text-align' : 'center', 'text-anchor': 'middle'}
+        text.set('style', formatStyle(style))
+
+        # Connect elements together.
+        layer.append(text)
+
+
     def prepareDocument(self):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         layers = []
