@@ -20,7 +20,7 @@
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu _name="Export Kicad">
-            <submenu _name="Svg2Shenzhen" />
+            <submenu _name="Svg2Shenzhen SVGSZ_VER" />
         </effects-menu>
     </effect>
     <script>
