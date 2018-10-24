@@ -241,7 +241,7 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         """
         logo_file_obj = BytesIO((logo_xml))
         new_obj = (etree.parse(logo_file_obj)).getroot()
-        lyr = self.findLayer("F.Cu")
+        # lyr = self.findLayer("F.Cu")
         lyr.append(new_obj)
 
 
