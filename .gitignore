@@ -3,3 +3,5 @@
 include/boost/*
 *.o
 *.gch
+dist/8
+dist/*
