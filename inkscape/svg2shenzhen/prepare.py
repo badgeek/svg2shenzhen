@@ -183,7 +183,7 @@ class Svg2ShenzhenPrepare(inkex.Effect):
         self.setDefaultUnits()
        
 
-    def prepareLogo(self):
+    def prepareLogo(self, lyr):
         logo_xml = """
         <g
            id="g14283">
