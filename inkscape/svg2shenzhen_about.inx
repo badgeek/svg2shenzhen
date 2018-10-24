@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>0. Help</_name>
+    <id>net.svg2shenzhen.about.me</id>
+	<param name='active-tab' type="notebook">
+
+	<page name='about' _gui-text='About'>	
+		<_param name="help" type="description">		
+Svg2Shenzhen version SVGSZ_VER
+Inkscape extension for exporting drawing into Kicad PCB
+
+Get New Update:
+https://github.com/badgeek/svg2shenzhen
+
+Support this software:
+https://patreon.com/badgeek
+
+
+		</_param>
+	</page>
+
+	</param>	
+    <effect needs-live-preview="false">
+        <effects-menu _name="About">
+			<submenu _name="Svg2Shenzhen SVGSZ_VER"/>
+		</effects-menu>
+		<object-type>all</object-type>
+    </effect>
+
+</inkscape-extension>
