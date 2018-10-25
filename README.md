@@ -30,10 +30,6 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 1. For Edge.Cut layers, you need to convert any polygons or objects to paths with only an outline, no fill. Don't use any groups on Edge.Cut layers and if you have paths with inner cut outs break them apart into separate paths.
 2. For Drill layers, place circle objects and they will be converted into drill pads in KiCad with the same diameter. These drills will not have annular rings unless you also add copper to the F.Cu and B.Cu layers. Don't use any groups on Drill layers either.
 
-## Known Bugs
-
-- The port of bitmap2component does not support non square image input, this issue tackled in prepare document by setting the document to square
-
 ## References
 
 - [Svg2Shenzhen Announcement on Gosh Community Forum](https://forum.openhardware.science/t/svg2shenzhen-save-inkscape-drawing-as-kicad-pcb/989)
