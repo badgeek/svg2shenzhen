@@ -23,7 +23,7 @@ rm -fr $cwd/$BUILD_DIR/$BUILD_DIR_STAGING/*.bak
 
 cd $cwd/$BUILD_DIR/$BUILD_DIR_STAGING
 
-zip -m -x .DS_Store -r $cwd/$BUILD_DIR/${RELEASE_FILENAME_PREFIX}.zip .
+zip -m -x .DS_Store -r $cwd/$BUILD_DIR/${RELEASE_FILENAME_PREFIX}-${GIT_TAG_VERSION}.zip .
 
 cd $cwd
 
