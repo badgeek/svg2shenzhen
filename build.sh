@@ -8,7 +8,7 @@ BUILD_DIR_STAGING=staging
 
 GIT_TAG_VERSION=`git describe --tag`
 
-RELEASE_FILENAME_PREFIX=svg2shenzhen
+RELEASE_FILENAME_PREFIX=svg2shenzhen-extension
 # echo "$cwd/$BUILD_DIR/$BUILD_DIR_STAGING"
 
 rm -fr $cwd/$BUILD_DIR/*
@@ -23,6 +23,6 @@ rm -fr $cwd/$BUILD_DIR/$BUILD_DIR_STAGING/*.bak
 
 cd $cwd/$BUILD_DIR/$BUILD_DIR_STAGING
 
-zip -m -x .DS_Store -r $cwd/$BUILD_DIR/${RELEASE_FILENAME_PREFIX}-${GIT_TAG_VERSION}.zip .
+zip -m -x .DS_Store -r $cwd/$BUILD_DIR/${RELEASE_FILENAME_PREFIX}.zip .
 
 cd $cwd
