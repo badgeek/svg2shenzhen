@@ -200,6 +200,15 @@ LibName28=contrib
 LibName29=valves
 '''
 
+MODULE_INVIS_REF_HEADER = '''
+(fp_text reference Ref** (at 0 0) (layer F.SilkS) hide
+(effects (font (size 1.27 1.27) (thickness 0.15)))
+)
+(fp_text value Val** (at 0 0) (layer F.SilkS) hide
+(effects (font (size 1.27 1.27) (thickness 0.15)))
+)
+'''
+
 IDENTITY_MATRIX = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
 
@@ -461,6 +470,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         elif options.filetype == "kicad_module":
             kicad_modules_string = '(module "{}" (layer F.Cu)'.format(name)
+            kicad_modules_string += MODULE_INVIS_REF_HEADER
             for kicad_file in kicad_mod_files:
                 with open(kicad_file, 'r') as f:
                     mod = f.readlines()[8:-1]
