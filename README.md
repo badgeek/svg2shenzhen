@@ -42,7 +42,9 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 This project is developed independently and without any connection to funding or big collective or organization, Donation is highly appreciated, go to https://www.patreon.com/badgeek become a patron and support this project
 
+<a href="https://www.patreon.com/badgeek">
 ![](https://i.imgur.com/ys5X3ZP.png)
+</a>
 
 
 ## Contributors
