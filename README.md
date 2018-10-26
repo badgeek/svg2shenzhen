@@ -1,7 +1,7 @@
 # Svg2Shenzhen
 Inkscape extension for exporting drawing into Kicad PCB
 
-![screenshot_125](https://user-images.githubusercontent.com/64752/38157030-170a81a0-34ad-11e8-85df-667a642505d8.png)
+![screenshot_125](https://i.imgur.com/gjFZZu3.jpg)
 
 ## Features
 
