@@ -293,30 +293,34 @@ class Svg2ShenzhenExport(inkex.Effect):
             root.attrib['width'] = str(height) + "mm"
             root.attrib['viewBox'] = "0 0 %f %f" % (height, height)
 
-    def findLayer(self, layerName):
+    def findLayer(self, layerName, contains=False):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         for layer in svg_layers:
             label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
             if label_attrib_name not in layer.attrib:
                 continue
-            if (layer.attrib[label_attrib_name] == layerName):
+            if ((layer.attrib[label_attrib_name] == layerName) and (contains == False)):
                 return layer
+            elif ((layerName in layer.attrib[label_attrib_name]) and (contains == True)):
+                return layer
+
         return False
 
     def effect(self):
         # self.setDocumentSquare()
         self.setInkscapeScaling()
-        self.processLayerSetting()
+        self.processAutoMasks()
         self.processExportLayer()
         if (self.options.openfactory):
             webbrowser.open("https://www.pcbway.com/setinvite.aspx?inviteid=54747", new = 2)
 
-    def processLayerSetting(self):
-        self.processMaskAuto()
+    def processAutoMasks(self):
+        self.processAutoMaskFromTo("F.Cu", "F.Mask-auto")
+        self.processAutoMaskFromTo("B.Cu", "B.Mask-auto")
 
-    def processMaskAuto(self):
-        copper_layer = self.findLayer("F.Cu")
-        cpmask_layer = self.findLayer("F.Mask-auto")
+    def processAutoMaskFromTo(self, from_layer, to_layer):
+        copper_layer = self.findLayer(from_layer, False)
+        cpmask_layer = self.findLayer(to_layer, True)
         # copper_layer = cpmask_layer
         if (copper_layer != False and cpmask_layer != False):
             for node in cpmask_layer.xpath("*", namespaces=inkex.NSS):
@@ -528,7 +532,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             layer_label = layer.attrib[label_attrib_name]
 
             layer_label_name = layer_label.replace("-invert", "")
-            layer_label_name = layer_label.replace("-auto", "")
+            layer_label_name = layer_label_name.replace("-auto", "")
 
             if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
