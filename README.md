@@ -12,7 +12,7 @@ Inkscape extension for exporting drawing into Kicad PCB
 
 ## Install
 
-Download latest version of [svg2shenzhen-extension.zip](https://github.com/badgeek/svg2shenzhen-next/releases)
+Download latest version (0.2.16) of [svg2shenzhen-extension.zip](https://github.com/badgeek/svg2shenzhen-next/releases)
 
 Extract and copy the files into the directory indicated in Edit -> Preferences -> System: User extensions
 
@@ -24,6 +24,11 @@ Extract and copy the files into the directory indicated in Edit -> Preferences -
     4.Extension > Svg2Shenzhen > Export Kicad
 
 Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2shenzhen-next/master/examples/viruspcb.svg)
+
+## Tutorials
+
+- Custom Footprints for Kicad - https://www.gabetaubman.com/blog/posts/kicad-custom-footprint/
+- PCBArt Badge - http://blog.sheasilverman.com/2019/01/pcbart/
 
 ## Tips
 
