@@ -32,12 +32,12 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 ## Layername definitions
 
+![screenshots_inkscape-3d-view](https://github.com/dusjagr/svg2shenzhen/raw/master/examples/myFirstPCB_comboScreen.png)
+
 1. After the Prepare Document onyl the 2 fabrication layers, Edge.Cuts and Drill, the F.Cu layer are active. The others have in the layer name "-disabled", change this by removing the ending to enable more layers.
 2. Special use of Soldermaks layers, F.Mask and B.Mask. Due to the fabrication standard of PCB manufacturing, when enabled this will lead to the soldemask NOT present, where there are black areas in your design. This is kinda PCB / KiCAD standard, but can be confusing. If you want to Get-What-You-See from inkscape, meaning that you really draw the color, where you want the soldermaks to be change the layer name to "F.Mask-invert"
 3. Super easy simple PCB with exposed copper, surrounded by soldermask can be generated automatically by leaving the F.Mask layer empty and renaming it to "F.Mask-auto".
 4. Feel free to add your own layers, for testing graphics and designing stuff. All these other layernames will be ignored.
-
-
 
 ## Tips
 
