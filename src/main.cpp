@@ -15,7 +15,7 @@ using namespace std;
 
 extern int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
                              OUTPUT_FMT_ID aFormat, int aDpi_X, int aDpi_Y,
-                             BMP2CMP_MOD_LAYER aModLayer );
+                             BMP2CMP_MOD_LAYER aModLayer, const char * layer_name = NULL );
 
 
 string pcb_header = "(kicad_pcb (version 4) (host pcbnew 4.0.7)"
@@ -139,7 +139,8 @@ int main(int argc, char* argv[])
     string output_filename;
 
 
-    BMP2CMP_MOD_LAYER kicad_output_layer;
+    BMP2CMP_MOD_LAYER kicad_output_layer = MOD_LYR_FCU;
+    const char * layer_name = NULL;
 
     showUsage();
 
@@ -149,21 +150,7 @@ int main(int argc, char* argv[])
     output_filename = string(argv[2]);
         
     if (argc > 3){
-        string layer_name = string(argv[3]);
-        if (layer_name == "F.Cu" )
-            kicad_output_layer = MOD_LYR_FCU;
-        else if(layer_name == "B.Cu")
-            kicad_output_layer = MOD_LYR_BCU;
-        else if(layer_name == "F.Mask")
-            kicad_output_layer = MOD_LYR_FMASK;
-        else if(layer_name == "B.Mask")
-            kicad_output_layer = MOD_LYR_BMASK;      
-        else if(layer_name == "F.Silk")
-            kicad_output_layer = MOD_LYR_FSILKS;    
-        else if(layer_name == "B.Silk")
-            kicad_output_layer = MOD_LYR_BSILKS;                               
-        else
-            kicad_output_layer = MOD_LYR_FCU;
+        layer_name = argv[3];
     }
 
 
@@ -246,7 +233,7 @@ int main(int argc, char* argv[])
    printf("[bitmap2component] Trace image\n");
 
 //    fprintf(pFile, pcb_header.c_str());
-   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, dpi, dpi, kicad_output_layer );
+   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, dpi, dpi, kicad_output_layer, layer_name );
 //    fprintf(pFile, pcb_footer.c_str());
 
 
