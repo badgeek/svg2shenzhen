@@ -256,16 +256,14 @@ class Svg2ShenzhenExport(inkex.Effect):
             'Cmts.User' : 'Cmts.User',
             'Eco1.User' : 'Eco1.User',
             'Eco2.User' : 'Eco2.User',
-            'Edge.Cuts' : 'Edge.Cuts',
             'Margin'    : 'Margin',
             'B.CrtYd'   : 'B.CrtYd',
             'F.CrtYd'   : 'F.CrtYd',
             'B.Fab'     : 'B.Fab',
             'F.Fab'     : 'F.Fab',
-            # 'Adhes' : "{}.Adhes",
-            # 'Paste' : "{}.Paste",
-            # 'CrtYd' : "{}.CrtYd",
-            # 'Fab' :   "{}.Fab",
+            # The following layers are here for backward compatibility:
+            'B.Silk'    : 'B.SilkS',
+            'F.Silk'    : 'F.SilkS',
             # 'Edge.Cuts' : "Edge.Cuts"
         }
 
@@ -586,7 +584,8 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
+        layer_name = self.layer_map[layer_type]
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_name, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         if (self.options.debug):
             inkex.debug(command)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
