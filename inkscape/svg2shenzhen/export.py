@@ -241,20 +241,31 @@ class Svg2ShenzhenExport(inkex.Effect):
         self.bb_scaling_h = 0
 
         self.layer_map = {
-            #'inkscape-name' : kicad-name,
-            'F.Cu' :    "F.Cu",
-            'B.Cu' :    "B.Cu",
-            # 'Adhes' : "{}.Adhes",
-            # 'Paste' : "{}.Paste",
-            'F.Silk' : "F.Silk",
-            'B.Silk' : "B.Silk",
-            'F.Mask' :  "F.Mask",
-            'B.Mask' :  "B.Mask",
-            # 'CrtYd' : "{}.CrtYd",
-            # 'Fab' :   "{}.Fab",
+            #'inkscape-name' : 'kicad-name',
+            'F.Cu'      : 'F.Cu',
+            'B.Cu'      : 'B.Cu',
+            'B.Adhes'   : 'B.Adhes',
+            'F.Adhes'   : 'F.Adhes',
+            'B.Paste'   : 'B.Paste',
+            'F.Paste'   : 'F.Paste',
+            'B.SilkS'   : 'B.SilkS',
+            'F.SilkS'   : 'F.SilkS',
+            'B.Mask'    : 'B.Mask',
+            'F.Mask'    : 'F.Mask',
+            'Dwgs.User' : 'Dwgs.User',
+            'Cmts.User' : 'Cmts.User',
+            'Eco1.User' : 'Eco1.User',
+            'Eco2.User' : 'Eco2.User',
+            'Margin'    : 'Margin',
+            'B.CrtYd'   : 'B.CrtYd',
+            'F.CrtYd'   : 'F.CrtYd',
+            'B.Fab'     : 'B.Fab',
+            'F.Fab'     : 'F.Fab',
+            # The following layers are here for backward compatibility:
+            'B.Silk'    : 'B.SilkS',
+            'F.Silk'    : 'F.SilkS',
             # 'Edge.Cuts' : "Edge.Cuts"
         }
-
 
 
     def coordToKicad(self,XYCoord):
@@ -573,7 +584,8 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_type, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
+        layer_name = self.layer_map[layer_type]
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_name, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         if (self.options.debug):
             inkex.debug(command)
         return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

@@ -132,26 +132,65 @@ class Svg2ShenzhenPrepare(inkex.Effect):
             rect = self.createWhitebg()
             white_layer.append(rect)
 
-        if ("Edge.Cuts" not in layers):
-            self.createLayer("Edge.Cuts")
+        if ("F.Cu" not in layers and "F.Cu-disabled" not in layers):
+            self.createLayer("F.Cu")
 
         if ("B.Cu-disabled" not in layers and "B.Cu" not in layers):
             self.createLayer("B.Cu-disabled")
 
+        if ("B.Adhes-disabled" not in layers and "B.Adhes" not in layers):
+            self.createLayer("B.Adhes-disabled")
+
+        if ("F.Adhes-disabled" not in layers and "F.Adhes" not in layers):
+            self.createLayer("F.Adhes-disabled")
+
+        if ("B.Paste-disabled" not in layers and "B.Paste" not in layers):
+            self.createLayer("B.Paste-disabled")
+
+        if ("F.Paste-disabled" not in layers and "F.Paste" not in layers):
+            self.createLayer("F.Paste-disabled")
+
+        if ("B.SilkS-disabled" not in layers and "B.SilkS" not in layers):
+            self.createLayer("B.SilkS-disabled")
+
+        if ("F.SilkS-disabled" not in layers and "F.SilkS" not in layers):
+            self.createLayer("F.SilkS-disabled")
+
         if ("B.Mask-disabled" not in layers and "B.Mask" not in layers):
             self.createLayer("B.Mask-disabled")
-
-        if ("B.Silk-disabled" not in layers and "B.Silk" not in layers):
-            self.createLayer("B.Silk-disabled")
-
-        if ("F.Cu" not in layers and "F.Cu-disabled" not in layers):
-            self.createLayer("F.Cu")
 
         if ("F.Mask-disabled" not in layers and "F.Mask" not in layers):
             self.createLayer("F.Mask-disabled")
 
-        if ("F.Silk-disabled" not in layers and "F.Silk" not in layers):
-            self.createLayer("F.Silk-disabled")
+        if ("Dwgs.User-disabled" not in layers and "Dwgs.User" not in layers):
+            self.createLayer("Dwgs.User-disabled")
+
+        if ("Cmts.User-disabled" not in layers and "Cmts.User" not in layers):
+            self.createLayer("Cmts.User-disabled")
+
+        if ("Eco1.User-disabled" not in layers and "Eco1.User" not in layers):
+            self.createLayer("Eco1.User-disabled")
+
+        if ("Eco2.User-disabled" not in layers and "Eco2.User" not in layers):
+            self.createLayer("Eco2.User-disabled")
+
+        if ("Edge.Cuts" not in layers):
+            self.createLayer("Edge.Cuts")
+
+        if ("Margin-disabled" not in layers and "Margin" not in layers):
+            self.createLayer("Margin-disabled")
+
+        if ("B.CrtYd-disabled" not in layers and "B.CrtYd" not in layers):
+            self.createLayer("B.CrtYd-disabled")
+
+        if ("F.CrtYd-disabled" not in layers and "F.CrtYd" not in layers):
+            self.createLayer("F.CrtYd-disabled")
+
+        if ("B.Fab-disabled" not in layers and "B.Fab" not in layers):
+            self.createLayer("B.Fab-disabled")
+
+        if ("F.Fab-disabled" not in layers and "F.Fab" not in layers):
+            self.createLayer("F.Fab-disabled")
 
         if ("Drill" not in layers):
             self.createLayer("Drill")

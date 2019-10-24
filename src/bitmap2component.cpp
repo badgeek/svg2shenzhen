@@ -80,7 +80,7 @@ public:
      * Creates the output file specified by m_Outfile,
      * depending on file format given by m_Format
      */
-    void CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer = (BMP2CMP_MOD_LAYER) 0 );
+    void CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer = (BMP2CMP_MOD_LAYER) 0, const char * aLayerName = NULL );
 
 
 private:
@@ -134,7 +134,7 @@ BITMAPCONV_INFO::BITMAPCONV_INFO()
 
 int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
                       OUTPUT_FMT_ID aFormat, int aDpi_X, int aDpi_Y,
-                      BMP2CMP_MOD_LAYER aModLayer )
+                      BMP2CMP_MOD_LAYER aModLayer, const char * aLayerName = NULL )
 {
     potrace_param_t* param;
     potrace_state_t* st;
@@ -201,7 +201,7 @@ int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
         info.m_ScaleX = 1e6 * 25.4 / aDpi_X;       // the conversion scale from PPI to UI
         info.m_ScaleY = 1e6 * 25.4 / aDpi_Y;       // Y axis is top to bottom in modedit
 
-        info.CreateOutputFile( aModLayer );
+        info.CreateOutputFile( aModLayer, aLayerName );
         break;
 
     default:
@@ -440,7 +440,7 @@ void BITMAPCONV_INFO::OuputOnePolygon( SHAPE_LINE_CHAIN & aPolygon, const char* 
 }
 
 
-void BITMAPCONV_INFO::CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer )
+void BITMAPCONV_INFO::CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer, const char * aLayerName )
 {
     std::vector <potrace_dpoint_t> cornersBuffer;
 
@@ -538,7 +538,7 @@ void BITMAPCONV_INFO::CreateOutputFile( BMP2CMP_MOD_LAYER aModLayer )
             for( int ii = 0; ii < polyset_areas.OutlineCount(); ii++ )
             {
                 SHAPE_LINE_CHAIN& poly = polyset_areas.Outline( ii );
-                OuputOnePolygon(poly, getBrdLayerName( aModLayer ) );
+                OuputOnePolygon(poly, aLayerName != NULL ? aLayerName : getBrdLayerName( aModLayer ) );
             }
 
             polyset_areas.RemoveAllContours();
