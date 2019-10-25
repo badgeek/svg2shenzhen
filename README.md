@@ -12,7 +12,7 @@ Inkscape extension for exporting drawing into Kicad PCB
 
 ## Install
 
-Download latest version (0.2.16) of [svg2shenzhen-extension.zip](https://github.com/badgeek/svg2shenzhen-next/releases)
+Download latest version (0.2.17) of [svg2shenzhen-extension.zip](https://github.com/badgeek/svg2shenzhen-next/releases)
 
 Extract and copy the files into the directory indicated in Edit -> Preferences -> System: User extensions
 
