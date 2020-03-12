@@ -69,4 +69,4 @@ This project is developed independently and without any connection to funding or
 * inkscape-export-layers - https://github.com/jespino/inkscape-export-layers
 * bitmap2component (kicad) - https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component
 * csv_output - https://github.com/tbekolay/csv_output
-* svg2mod - https://github.com/mtl/svg2mod
+* svg2mod - https://github.com/svg2mod/svg2mod
