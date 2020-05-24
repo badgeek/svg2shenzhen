@@ -218,17 +218,6 @@ class Svg2ShenzhenExport(inkex.Effect):
     def __init__(self):
         """init the effect library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--path", type=str, dest="path", default="~/", help="")
-        self.arg_parser.add_argument('-f', '--filetype', type=str, dest='filetype', default='jpeg', help='Exported file type')
-        self.arg_parser.add_argument("--crop", type=inkex.Boolean, dest="crop", default=False)
-        self.arg_parser.add_argument("--dpi", type=int, dest="dpi", default=600)
-        self.arg_parser.add_argument("--threshold", type=float, dest="threshold", default=128.0)
-        self.arg_parser.add_argument("--openfactory", type=inkex.Boolean, dest="openfactory", default="true")
-        self.arg_parser.add_argument("--openkicad", type=inkex.Boolean, dest="openkicad", default="true")
-        self.arg_parser.add_argument("--autoflatten", type=inkex.Boolean, dest="autoflatten", default="true")
-        self.arg_parser.add_argument("--debug", type=inkex.Boolean, dest="debug", default=False)
-
-
         self.doc_width = 0
         self.doc_height = 0
 
@@ -264,6 +253,16 @@ class Svg2ShenzhenExport(inkex.Effect):
             # 'Edge.Cuts' : "Edge.Cuts"
         }
 
+    def add_arguments(self, pars):
+        pars.add_argument("--path", default="~/")
+        pars.add_argument('-f', '--filetype', default='jpeg', help='Exported file type')
+        pars.add_argument("--crop", type=inkex.Boolean, default=False)
+        pars.add_argument("--dpi", type=int, default=600)
+        pars.add_argument("--threshold", type=float, default=128.0)
+        pars.add_argument("--openfactory", type=inkex.Boolean, default="true")
+        pars.add_argument("--openkicad", type=inkex.Boolean, default="true")
+        pars.add_argument("--autoflatten", type=inkex.Boolean, default="true")
+        pars.add_argument("--debug", type=inkex.Boolean, default=False)
 
     def coordToKicad(self,XYCoord):
         return [
@@ -272,7 +271,6 @@ class Svg2ShenzhenExport(inkex.Effect):
         ]
 
     def setInkscapeScaling(self):
-
         root = self.document.getroot()
         height = float(root.get('height').replace("mm", ""))
         width = float(root.get('width').replace("mm", ""))
@@ -634,8 +632,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
             nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                d = node.get('d')
-                p = inkex.Path(d).to_arrays()
+                p = node.path.to_arrays()
 
                 points = []
                 if p:
@@ -643,8 +640,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                     if p[0][0] == 'M':
                         t = node.get('transform')
                         if t:
-                            m = Transform(t).matrix
-                            trans = (Transform(layer_m)*Transform(m)).matrix
+                            trans = (Transform(layer_m)*Transform(t)).matrix
                         else:
                             trans = layer_m
 
@@ -664,10 +660,6 @@ class Svg2ShenzhenExport(inkex.Effect):
         return kicad_edgecut_string
 
     def exportDrill(self, kicad_mod=False):
-        x0 = 0
-        y0 = 0
-        mirror = 1.0
-
         self.setInkscapeScaling()
 
         kicad_drill_string = ""

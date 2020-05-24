@@ -21,13 +21,16 @@ class Svg2ShenzhenPrepare(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--docwidth", type=float, dest="docwidth", default=0.0)
-        self.arg_parser.add_argument("--docheight", type=float, dest="docheight", default=0.0)
-
+        
         self.bb_width_center = 0
         self.bb_height_center = 0
         self.bb_scaling_h = 0
         self.bb_scaling_w = 0
+
+
+    def add_arguments(self, pars):
+        pars.add_argument("--docwidth", type=float, default=0.0)
+        pars.add_argument("--docheight", type=float, default=0.0)
 
     def coordToKicad(self,XYCoord):
         return [
