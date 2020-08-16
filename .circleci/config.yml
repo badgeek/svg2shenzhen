@@ -15,5 +15,10 @@ jobs:
           name: "Check docker"
           shell: powershell.exe
           command: |
-            docker info
-            docker run hello-world:nanoserver-1809
+            choco install wget
+            wget https://nuwen.net/files/mingw/mingw-17.1-without-git.exe
+            mingw-17.1-without-git.exe -o"C:\MinGW" -y
+            set PATH="%PATH%;c:\MinGW\bin"
+            make
+            
+
