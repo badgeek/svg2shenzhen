@@ -16,7 +16,7 @@ jobs:
           shell: powershell.exe
           command: |
             choco install wget
-            wget https://nuwen.net/files/mingw/mingw-17.1-without-git.exe
+            curl -O https://nuwen.net/files/mingw/mingw-17.1-without-git.exe
             mingw-17.1-without-git.exe -o"C:\MinGW" -y
             set PATH="%PATH%;c:\MinGW\bin"
             make
