@@ -86,7 +86,7 @@ jobs:
         create:
           name: linux-binaries
           paths:
-            - bitmap2component
+            - bitmap2component_linux64
       language: cpp
       dist: trusty
       script:
@@ -94,11 +94,14 @@ jobs:
       - unzip boost.zip
       - mv boost src
       - make
+      - mv bitmap2component bitmap2component_linux64
     - stage: unit tests
       os: osx
-#       workspaces:
-#         create:
-#           name: osx-binaries      
+      workspaces:
+        create:
+          name: osx-binaries      
+          paths:
+            - bitmap2component_osx
       osx_image: xcode12u
       language: cpp
       script:
@@ -106,6 +109,7 @@ jobs:
       - unzip boost.zip
       - mv boost src
       - make
+      - mv bitmap2component bitmap2component_osx
     - stage: deploy
       language: minimal
       workspaces:
