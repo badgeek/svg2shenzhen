@@ -35,8 +35,6 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 
 ## Layername definitions
 
-![screenshots_inkscape-3d-view](https://github.com/dusjagr/svg2shenzhen/raw/master/examples/myFirstPCB_comboScreen.png)
-
 1. After the *Prepare Document* step, only two fabrication layers are used:
    *Edge.Cuts* and *Drill*,
    and for the different PCB-layers, only the *F.Cu* layer is active.
