@@ -12,8 +12,8 @@ jobs:
       - checkout
       - run: systeminfo
       - run:
-          name: "Check docker"
-          shell: cmd.exe
+          name: "Build bitmap2component [windows]"
+          shell: bash.exe
           command: |
             choco install wget
             choco install make
