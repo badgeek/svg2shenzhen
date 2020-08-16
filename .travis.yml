@@ -27,17 +27,18 @@ language: cpp
 compiler: cl
 os: windows
 script:
-- choco add wget
 - choco install make
 - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
 - unzip boost.zip
 - mv boost src
 - make
-# deploy:
-#   provider: releases
-#   api_key:
-#     secure: Bnyr2Rd9tVxSAMfu7I7YHw2RmEmNkCBXQqHoWwalGYnxWfNZvnr1WKgGiAffTwrAwe+UwUnF68GAMqPojt3fLgaoiWbE2a6XEKcqbsC3g3wPxT/ZoEmAd6Y7yi6qWp6FMjbaNWxXk7nNiGjAfkjOUccpC4iopZLX6jkkjDg/sNlmEpmm1uvK4OFDLXCfjOyrQ7u28Ok5OjGr5ZmXiEhGNan6KChNQ2a/ox9FEuLOz6B4PDBNk5ffY056FYlAb82J347PSf4Uforf9lGvG8EYU1aVqICAUobzF+jGWmG8XHJmL6UmyQ2lqoa3/dGTztLdmaCN2CbBoxhOEwa5MnY27L3rKN+B2bTRUin4yzX6osMEK/iPn6d4AAlwb277qrZzXY/memvZn6tBPaQTryXZzSCPoaVgnUsgjLWa5c43EA3xoXVMesgSwmMtOnTZ9F0uxo6e+LbZ0MjpSnrCy7wvgPyfRvgrBWS9awioe+5MyWu2Uio0IVhtC+NkyRkByGblyQAI8pB+jQhO6lmWWdQM5RUDcj4KLN1Zv1IKZdOt/Gk3Gxaf9y6rEQPj1VNxjNR0ZGp5BQ473SgybSBq0Ej5JBmR83Wu3SyKNPzTKN9vRyxIYxkGeM2BJTfi+MijeQv1Rc4EG6diN61CTz9ByfA2v6fC9Z0DT+Fc2zmFA2YlK6M=
-#   file: timer.exe
-#   on:
-#     repo: hect1995/TimerShutDown
-#   skip_cleanup: 'true'
+deploy:
+  provider: releases
+  api_key:
+    secure: KLiKx9YA0IMonTKywaxcdO00YCtXffJTmPlZj1edGAV1aKiWr8u9l5iW9qluNgUI/zeUCmJCJZj0V/k6U29E5lAbGRkngXfA0wqG3E4AxVPVjPQ17m2bipKJJRQjstrSgJCGjyNiBWVcAc3M2Ht/1TWEXFgzkjkBS8y0KdxO5vELgQ0e3MkTp+jTPqoPF7ap455nDydx5ck5wT9MWr+/JWcwnWcTzmVNemSeuwdp9q5xIlqhU0V8rFGBSf3NvRtIhH8DfCbEB/ZHF+qJk1AHFHP3rDaIEmCdvhBcZq3nNQToRKNpta4PO2OOq77ZHhck1oSqj/bLfIgD0m54fef6hyNLBsZskKxvWvC/ddCUolL5gQIntV9u6d8R50jYGTOIFjp9TrBoEgLa795Xiv4UfeXExc6C5lvZS6qOxT5gU0LnINb8lBBJIVK+/a4xDDE/F8IcGH+EeIKsGnncnH5Zb048bddGh/YHF5SLc7VjdCGFjMg4xp/RiBxrCPg545wmVf6GppUlpoYwC+rGjB/P+USpatYNIRW1Neh4+CAosPz8rrYA9g5tiW6SUdG4f0a98LlFcGCwQ79XwVwZGgyh+GhTSKGySypCAE7n0YfyVFcpR9USKqBcCRQVafAJm2B/59zx2Qfm2zOyEIwcfpURrFRMRnvolaaus0UmqSi51S0=
+  file_glob: true
+  file: "*.exe"
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: master 
