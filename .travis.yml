@@ -80,4 +80,4 @@ jobs:
       language: cpp
       dist: trusty
       script:
-      - ls
+      - make
