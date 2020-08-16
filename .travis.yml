@@ -82,11 +82,11 @@ jobs:
       - make
     - stage: unit tests
       os: linux
-      workspaces:
-        create:
-          name: linux-binaries
-          paths:
-            - bitmap2component_linux64
+#       workspaces:
+#         create:
+#           name: linux-binaries
+#           paths:
+#             - bitmap2component_linux64
       language: cpp
       dist: trusty
       script:
