@@ -21,5 +21,6 @@ jobs:
             mingw-17.1-without-git.exe -o"C:\MinGW" -y
             set PATH="%PATH%;c:\MinGW\bin"
             make
+            ls
             
 
