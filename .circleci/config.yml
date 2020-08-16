@@ -13,9 +13,10 @@ jobs:
       - run: systeminfo
       - run:
           name: "Check docker"
-          shell: powershell.exe
+          shell: cmd.exe
           command: |
-            choco install wget
+            choco install 
+            choco install make
             curl -O https://nuwen.net/files/mingw/mingw-17.1-without-git.exe
             mingw-17.1-without-git.exe -o"C:\MinGW" -y
             set PATH="%PATH%;c:\MinGW\bin"
