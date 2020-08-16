@@ -39,6 +39,6 @@ deploy:
   file_glob: true
   file: "*.exe"
   skip_cleanup: true
-  on:
-    tags: true
-    branch: master 
+#   on:
+#     tags: true
+#     branch: master 
