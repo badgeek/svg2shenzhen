@@ -42,23 +42,30 @@
 #   on:
 #     tags: true
 #     branch: master 
-language: cpp
+# language: cpp
+
+# jobs:
+#   include:
+#   - stage: build
+#     os: windows
+#     language: cpp
+#     compiler: cl
+#     script:
+#     - choco install make
+#     - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
+#     - unzip boost.zip
+#     - mv boost src
+#     - make
+#    - stage: build
+#     os: linux
+#     language: cpp
+#     dist: trusty
+#     script:
+#     - ls -al
 
 jobs:
   include:
-  - stage: build
-    os: windows
-    language: cpp
-    compiler: cl
-    script:
-    - choco install make
-    - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-    - unzip boost.zip
-    - mv boost src
-    - make
-   - stage: build
-    os: linux
-    language: cpp
-    dist: trusty
-    script:
-    - ls -al
+    - stage: unit tests
+      script: echo one
+    - stage: unit tests
+      script: echo two
