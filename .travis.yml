@@ -111,6 +111,7 @@ jobs:
       - make
       - mv bitmap2component bitmap2component_osx
     - stage: deploy
+      os: osx
       language: minimal
       sudo: true
       workspaces:
