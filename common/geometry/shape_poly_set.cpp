@@ -25,6 +25,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
+#define _USE_MATH_DEFINES 
+#include <cmath>
 
 #include <vector>
 #include <cstdio>
