@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-std=c++11
-INCLUDES=-Iinclude -Ipolygon -Ipotrace -Isrc -IC:\MinGW\include
+INCLUDES=-Iinclude -Ipolygon -Ipotrace -Isrc -I./ -IC:\MinGW\include
 LIBS=
 
 SOURCES:=\
