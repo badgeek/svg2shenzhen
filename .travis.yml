@@ -66,6 +66,13 @@
 jobs:
   include:
     - stage: unit tests
-      script: echo one
+      os: windows
+      language: cpp
+      compiler: cl
+      script:
+      - choco install make
+      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
+      - unzip boost.zip
+      - mv boost src
     - stage: unit tests
       script: echo two
