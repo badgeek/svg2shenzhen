@@ -45,7 +45,7 @@
 language: cpp
 jobs:
   include:
-  - stage: build-windows
+  - stage: buildwindows
     os: windows
     language: cpp
     compiler: cl
@@ -55,7 +55,7 @@ jobs:
     - unzip boost.zip
     - mv boost src
     - make
-   - stage: build-linux
+   - stage: buildlinux
     os: linux
     language: cpp
     dist: trusty
