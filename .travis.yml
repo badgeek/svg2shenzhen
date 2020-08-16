@@ -84,3 +84,13 @@ jobs:
       - unzip boost.zip
       - mv boost src
       - make
+    - stage: unit tests
+      os: osx
+      osx_image: xcode12u
+      language: cpp
+      dist: trusty
+      script:
+      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
+      - unzip boost.zip
+      - mv boost src
+      - make
