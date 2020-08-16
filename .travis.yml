@@ -27,6 +27,7 @@ language: cpp
 compiler: cl
 os: windows
 script:
+- choco install make
 - make
 # deploy:
 #   provider: releases
