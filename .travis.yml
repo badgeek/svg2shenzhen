@@ -67,6 +67,9 @@ jobs:
   include:
     - stage: unit tests
       os: windows
+      workspaces:
+        create:
+          name: windows-binaries
       language: cpp
       compiler: cl
       script:
@@ -77,6 +80,9 @@ jobs:
       - make
     - stage: unit tests
       os: linux
+      workspaces:
+        create:
+          name: linux-binaries
       language: cpp
       dist: trusty
       script:
@@ -86,6 +92,9 @@ jobs:
       - make
     - stage: unit tests
       os: osx
+      workspaces:
+        create:
+          name: osx-binaries      
       osx_image: xcode12u
       language: cpp
       dist: trusty
@@ -94,3 +103,14 @@ jobs:
       - unzip boost.zip
       - mv boost src
       - make
+    - stage: deploy
+      language: minimal
+      workspaces:
+        use:
+          - linux-binaries
+          - osx-binaries
+          - windows-binaries
+      git:
+        clone: false
+      script:
+        - ls
