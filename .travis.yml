@@ -122,12 +122,12 @@ jobs:
       git:
         clone: true
       script:
-        - ls -R .
         # - ls ${CASHER_DIR}/
         - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
         - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
         - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
         - mv home/travis/build/badgeek/svg2shenzhen/bitmap2component_linux64 ./bitmap2component_linux64
+        - ls -R .
         # - curl -F"file=@${CASHER_DIR}/linux-binaries-fetch.tgz" https://0x0.st
         # - curl --upload-file ${CASHER_DIR}/linux-binaries-fetch.tgz https://transfer.sh/hello.linux-binaries-fetch.tgz
         # - ls -al ~/
