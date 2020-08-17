@@ -3,15 +3,15 @@
     <_name>2. Export Kicad</_name>
     <id>net.svg2shenzhen.export.layers</id>
     <dependency type="executable" location="extensions">svg2shenzhen/export.py</dependency>
-	<param name="help" type="description">Export Drawing to Kicad PCB Format</param>
-    <param name="path" type="string"  _gui-text="Choose path to export">~/</param>
+	<param name="help" type="description">Export Drawing to KiCad PCB Format</param>
+    <param type="path" name="path" _gui-text="Choose Path to Export" mode="folder"/>
     <param name="filetype" type="optiongroup" gui-text="Export layers as..." appearance="minimal">
-       <option selected="selected" value="kicad_pcb">KICAD - PCB</option>
-       <option value="kicad_module">KICAD - Module</option>
+       <option selected="selected"  value="kicad_module">KiCad - Module</option>
+       <option value="kicad_pcb">KiCad - Project</option>
        <option value="png">PNG - Image</option>
     </param>
     <param name="threshold" type="int" min="0" max="255" _gui-text="Threshold (default: 5)">5</param>
-    <param name="dpi" type="int" min="0" max="2000" _gui-text="Export DPI (default: 600)">600</param>
+    <param name="dpi" type="int" min="0" max="3600" _gui-text="Export DPI (default: 1200)">1200</param>
     <param name="autoflatten" type="boolean" gui-text="Auto flatten bezier for Edge.Cuts layer?">true</param>
     <param name="debug" type="boolean" gui-text="Debug Mode?">false</param>
     <param name="openfactory" type="boolean" gui-text="Open PCBWay after export?">true</param>
