@@ -122,7 +122,9 @@ jobs:
       # git:
         # clone: false
       script:
-        - ls -R .
+        # - ls -R .
+        - ls -R ~/
+        - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
 #       deploy:
 #         provider: releases
 #         api_key:
