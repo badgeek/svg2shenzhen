@@ -124,9 +124,9 @@ jobs:
       script:
         # - ls -R .
         # - ls ${CASHER_DIR}/
-        - tar -xzf ${CASHER_DIR}/linux-binaries-fetch.tgz --no-anchored '*bitmap2component_*'
-        - tar -xzf ${CASHER_DIR}/osx-binaries-fetch.tgz --no-anchored '*bitmap2component_*'
-        - tar -xzf ${CASHER_DIR}/windows-binaries-fetch.tgz --no-anchored '*.exe*'
+        - tar -xzf ${CASHER_DIR}/linux-binaries-fetch.tgz '*bitmap2component_*'
+        - tar -xzf ${CASHER_DIR}/osx-binaries-fetch.tgz '*bitmap2component_*'
+        - tar -xzf ${CASHER_DIR}/windows-binaries-fetch.tgz '*.exe*'
         - ls -al
         # - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
 #       deploy:
