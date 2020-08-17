@@ -114,11 +114,11 @@ jobs:
       os: osx
       language: minimal
       sudo: true
-      # workspaces:
-        # use:
-          # - linux-binaries
-          # - osx-binaries
-          # - windows-binaries
+      workspaces:
+        use:
+          - linux-binaries
+          - osx-binaries
+          - windows-binaries
       # git:
         # clone: false
       script:
