@@ -119,11 +119,15 @@ jobs:
           - linux-binaries
           - osx-binaries
           - windows-binaries
-      # git:
-        # clone: false
+      git:
+        clone: true
       script:
         # - ls -R .
-        - ls ${CASHER_DIR}/
+        # - ls ${CASHER_DIR}/
+        - tar -xzf ${CASHER_DIR}/linux-binaries-fetch.tgz --wildcards --no-anchored '*bitmap2component_*'
+        - tar -xzf ${CASHER_DIR}/osx-binaries-fetch.tgz --wildcards --no-anchored '*bitmap2component_*'
+        - tar -xzf ${CASHER_DIR}/windows-binaries-fetch.tgz --wildcards --no-anchored '*.exe*'
+        - ls -al
         # - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
 #       deploy:
 #         provider: releases
