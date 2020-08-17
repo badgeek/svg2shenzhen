@@ -60,8 +60,9 @@ jobs:
         - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
         - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
         - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
-        - mv home/travis/build/badgeek/svg2shenzhen/bitmap2component_linux64 ./bitmap2component_linux64
-        - mv ./C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe ./bitmap2component.exe
+        - mv home/travis/build/badgeek/svg2shenzhen/bitmap2component_linux64 ./inkscape/svg2shenzhen/bitmap2component_linux64
+        - mv ./C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe ./inkscape/svg2shenzhen/bitmap2component.exe
+        - mv ./bitmap2component_osx ./inkscape/svg2shenzhen/
         - sh build.sh
       deploy:
         provider: releases
