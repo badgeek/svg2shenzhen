@@ -79,6 +79,11 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 - [Practical Guide to Designing PCB Art](https://medium.com/@urish/a-practical-guide-to-designing-pcb-art-b5aa22926a5c)
 - [KitSprint ANORG 2018](http://wiki.sgmk-ssam.ch/wiki/KitSprint_ANORG_2018#Kicad_bitmap_import_for_Shenzhen_Ready)
 
+## Videos
+- Drawing PCBs with Inkscape (FOSSDEM) with @kasbah of kitspace - https://www.youtube.com/watch?v=xXRPw7ItMaM
+- Making a PCB Badge for Hackaday Supercon! - https://www.youtube.com/watch?v=YqdBiOj8uXw
+- Understanding and Making PCB Art (mrtwinkletwinkle) https://www.youtube.com/watch?v=Sbkvza8cKQE
+
 ## Support this project
 
 This project is developed independently and without any connection to funding or big collective or organization.
