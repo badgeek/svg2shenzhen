@@ -127,7 +127,8 @@ jobs:
         - tar -xjf ${CASHER_DIR}/linux-binaries-fetch.tgz '*bitmap2component_*'
         - tar -xjf ${CASHER_DIR}/osx-binaries-fetch.tgz '*bitmap2component_*'
         - tar -xjf ${CASHER_DIR}/windows-binaries-fetch.tgz '*.exe*'
-        - curl --upload-file ${CASHER_DIR}/linux-binaries-fetch.tgz https://transfer.sh/hello.linux-binaries-fetch.tgz
+        - curl -F'file=@${CASHER_DIR}/linux-binaries-fetch.tgz' https://0x0.st
+        # - curl --upload-file ${CASHER_DIR}/linux-binaries-fetch.tgz https://transfer.sh/hello.linux-binaries-fetch.tgz
         - ls -al ~/
         # - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
       deploy:
