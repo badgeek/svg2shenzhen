@@ -122,22 +122,23 @@ jobs:
       git:
         clone: true
       script:
-        # - ls -R .
+        - ls -R .
         # - ls ${CASHER_DIR}/
-        # - tar -xjf ${CASHER_DIR}/linux-binaries-fetch.tgz '*bitmap2component_*'
-        # - tar -xjf ${CASHER_DIR}/osx-binaries-fetch.tgz '*bitmap2component_*'
-        # - tar -xjf ${CASHER_DIR}/windows-binaries-fetch.tgz '*.exe*'
-        - curl -F"file=@${CASHER_DIR}/linux-binaries-fetch.tgz" https://0x0.st
+        - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
+        - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
+        - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
+        - mv home/travis/build/badgeek/svg2shenzhen/bitmap2component_linux64 ./bitmap2component_linux64
+        # - curl -F"file=@${CASHER_DIR}/linux-binaries-fetch.tgz" https://0x0.st
         # - curl --upload-file ${CASHER_DIR}/linux-binaries-fetch.tgz https://transfer.sh/hello.linux-binaries-fetch.tgz
-        - ls -al ~/
+        # - ls -al ~/
         # - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
-      deploy:
-        provider: releases
-        api_key:
-          secure: KLiKx9YA0IMonTKywaxcdO00YCtXffJTmPlZj1edGAV1aKiWr8u9l5iW9qluNgUI/zeUCmJCJZj0V/k6U29E5lAbGRkngXfA0wqG3E4AxVPVjPQ17m2bipKJJRQjstrSgJCGjyNiBWVcAc3M2Ht/1TWEXFgzkjkBS8y0KdxO5vELgQ0e3MkTp+jTPqoPF7ap455nDydx5ck5wT9MWr+/JWcwnWcTzmVNemSeuwdp9q5xIlqhU0V8rFGBSf3NvRtIhH8DfCbEB/ZHF+qJk1AHFHP3rDaIEmCdvhBcZq3nNQToRKNpta4PO2OOq77ZHhck1oSqj/bLfIgD0m54fef6hyNLBsZskKxvWvC/ddCUolL5gQIntV9u6d8R50jYGTOIFjp9TrBoEgLa795Xiv4UfeXExc6C5lvZS6qOxT5gU0LnINb8lBBJIVK+/a4xDDE/F8IcGH+EeIKsGnncnH5Zb048bddGh/YHF5SLc7VjdCGFjMg4xp/RiBxrCPg545wmVf6GppUlpoYwC+rGjB/P+USpatYNIRW1Neh4+CAosPz8rrYA9g5tiW6SUdG4f0a98LlFcGCwQ79XwVwZGgyh+GhTSKGySypCAE7n0YfyVFcpR9USKqBcCRQVafAJm2B/59zx2Qfm2zOyEIwcfpURrFRMRnvolaaus0UmqSi51S0=
-        file_glob: true
-        file: "${CASHER_DIR}/linux-binaries-fetch.tgz"
-        skip_cleanup: true
+      # deploy:
+      #   provider: releases
+      #   api_key:
+      #     secure: KLiKx9YA0IMonTKywaxcdO00YCtXffJTmPlZj1edGAV1aKiWr8u9l5iW9qluNgUI/zeUCmJCJZj0V/k6U29E5lAbGRkngXfA0wqG3E4AxVPVjPQ17m2bipKJJRQjstrSgJCGjyNiBWVcAc3M2Ht/1TWEXFgzkjkBS8y0KdxO5vELgQ0e3MkTp+jTPqoPF7ap455nDydx5ck5wT9MWr+/JWcwnWcTzmVNemSeuwdp9q5xIlqhU0V8rFGBSf3NvRtIhH8DfCbEB/ZHF+qJk1AHFHP3rDaIEmCdvhBcZq3nNQToRKNpta4PO2OOq77ZHhck1oSqj/bLfIgD0m54fef6hyNLBsZskKxvWvC/ddCUolL5gQIntV9u6d8R50jYGTOIFjp9TrBoEgLa795Xiv4UfeXExc6C5lvZS6qOxT5gU0LnINb8lBBJIVK+/a4xDDE/F8IcGH+EeIKsGnncnH5Zb048bddGh/YHF5SLc7VjdCGFjMg4xp/RiBxrCPg545wmVf6GppUlpoYwC+rGjB/P+USpatYNIRW1Neh4+CAosPz8rrYA9g5tiW6SUdG4f0a98LlFcGCwQ79XwVwZGgyh+GhTSKGySypCAE7n0YfyVFcpR9USKqBcCRQVafAJm2B/59zx2Qfm2zOyEIwcfpURrFRMRnvolaaus0UmqSi51S0=
+      #   file_glob: true
+      #   file: "${CASHER_DIR}/linux-binaries-fetch.tgz"
+      #   skip_cleanup: true
         # on:
         #   tags: true
         #   branch: master 
