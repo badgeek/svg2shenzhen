@@ -114,17 +114,17 @@ jobs:
       os: osx
       language: minimal
       sudo: true
-      workspaces:
-        use:
-          - linux-binaries
-          - osx-binaries
-          - windows-binaries
+      # workspaces:
+        # use:
+          # - linux-binaries
+          # - osx-binaries
+          # - windows-binaries
       # git:
         # clone: false
       script:
         # - ls -R .
-        - ls -R ~/
-        - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
+        - ls ${CASHER_DIR}/
+        # - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
 #       deploy:
 #         provider: releases
 #         api_key:
