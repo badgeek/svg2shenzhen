@@ -57,18 +57,12 @@ jobs:
       git:
         clone: true
       script:
-        # - ls ${CASHER_DIR}/
         - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
         - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
         - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
         - mv home/travis/build/badgeek/svg2shenzhen/bitmap2component_linux64 ./bitmap2component_linux64
         - mv ./C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe ./bitmap2component.exe
         - sh build.sh
-        # - ls -R .
-        # - curl -F"file=@${CASHER_DIR}/linux-binaries-fetch.tgz" https://0x0.st
-        # - curl --upload-file ${CASHER_DIR}/linux-binaries-fetch.tgz https://transfer.sh/hello.linux-binaries-fetch.tgz
-        # - ls -al ~/
-        # - mv /C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe .
       deploy:
         provider: releases
         api_key:
