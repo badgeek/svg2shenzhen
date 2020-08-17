@@ -119,8 +119,8 @@ jobs:
           - linux-binaries
           - osx-binaries
           - windows-binaries
-      git:
-        clone: false
+      # git:
+        # clone: false
       script:
         - ls -R .
 #       deploy:
