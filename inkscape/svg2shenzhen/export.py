@@ -14,7 +14,11 @@ import pickle
 from copy import deepcopy
 from inkex import bezier
 from inkex.transforms import Transform
+from pathlib import Path
 
+
+homePath = str()
+homePath = Path.home()
 
 EXPORT_PNG_MAX_PROCESSES = 3
 EXPORT_KICAD_MAX_PROCESSES = 2
@@ -254,7 +258,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         }
 
     def add_arguments(self, pars):
-        pars.add_argument("--path", default="~/")
+        pars.add_argument("--path", default=homePath)
         pars.add_argument('-f', '--filetype', default='jpeg', help='Exported file type')
         pars.add_argument("--crop", type=inkex.Boolean, default=False)
         pars.add_argument("--dpi", type=int, default=600)
@@ -338,7 +342,12 @@ class Svg2ShenzhenExport(inkex.Effect):
     def processExportLayer(self):
         options = self.options
 
-        output_path = os.path.expanduser(options.path)
+        if os.path.dirname(os.getcwd()) == options.path:
+            inkex.errormsg('EXPORT ERROR! Please Select A Directory To Export To!')
+            exit()
+        else:
+            output_path = os.path.expanduser(options.path)
+
         curfile = self.options.input_file
         layers = self.get_layers(curfile)
         name = self.get_name()
