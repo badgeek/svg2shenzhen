@@ -15,10 +15,10 @@ Inkscape extension for exporting drawings into a KiCad PCB
 
 Warning: starting from 0.2.18 svg2shenzhen only support Inkscape 1.0 and above
 
-1. Download the latest version (0.2.18.3)
-  - Windows https://github.com/badgeek/svg2shenzhen/releases/download/0.2.18.3/svg2shenzhen-extension-0.2.18.3.zip
-  - Linux / OSX https://github.com/badgeek/svg2shenzhen/releases/download/0.2.18.3/svg2shenzhen-extension-0.2.18.3.tar.gz
-  - Release notes: https://github.com/badgeek/svg2shenzhen/releases/tag/0.2.18.3
+1. Download the latest version (0.2.18.5)
+  - Windows https://github.com/badgeek/svg2shenzhen/releases/download/0.2.18.5/svg2shenzhen-extension-0.2.18.5.zip
+  - Linux / OSX https://github.com/badgeek/svg2shenzhen/releases/download/0.2.18.5/svg2shenzhen-extension-0.2.18.5.tar.gz
+  - Release notes: https://github.com/badgeek/svg2shenzhen/releases
   - Older version: https://github.com/badgeek/svg2shenzhen/releases
   
 2. Extract and copy the files into the directory indicated in Inkscape under *Edit -> Preferences -> System: User extensions*
