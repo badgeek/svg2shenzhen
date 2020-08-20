@@ -169,7 +169,9 @@ class Svg2ShenzhenPrepare(inkex.Effect):
             white_layer.append(rect)
 
         # Create the Selected Layers
-        for key, value in reversed(kicadLayers.items()):
+        kicadLayersArray = list(kicadLayers.items());
+
+        for key, value in reversed(kicadLayersArray):
            disabledValue = '%s-disabled' % (value)
            selectedValue = getattr(options, key)
            if selectedValue == "true" and value not in layers and disabledValue not in layers:
