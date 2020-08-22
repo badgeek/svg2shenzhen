@@ -23,6 +23,26 @@ Warning: starting from 0.2.18 svg2shenzhen only support Inkscape 1.0 and above
 
 2. Extract and copy the files into the directory indicated in Inkscape under *Edit -> Preferences -> System: User extensions*
 
+**Step by Step Guide with Screenshot**
+  - Go to your extracted folder it should look like this
+  
+  ![windowsStep0](https://github.com/iharshadec/svg2shenzhen/blob/master/doc/resources/windows_step_0.png?raw=true)
+  
+  - Copy all files *("svg2shenzhen" folder + svg2shenzhen_about.inx + svg2shenzhen_export.inx + svg2shenzhen_prepare.inx)*
+  - Open Inkscape and go **Edit --> Preferences**
+  
+  ![windowsStep1](https://github.com/iharshadec/svg2shenzhen/blob/master/doc/resources/windows_step_1.png?raw=true)
+  
+  - Under Preferences go to **System**, Now in **System info** you will see option ***User extensions:*** this is the path of extension. You can hit on ***Open*** icon and it will open up the folder.
+  
+  ![windowsStep2](https://github.com/iharshadec/svg2shenzhen/blob/master/doc/resources/windows_step_2.png?raw=true)
+  
+  - Paste all the files copied
+  
+  ![windowsStep3](https://github.com/iharshadec/svg2shenzhen/blob/master/doc/resources/windows_step_3.png?raw=true)
+  
+  - **Restart Inkscape** 
+
 ## How to
 
 In Inkscape:
