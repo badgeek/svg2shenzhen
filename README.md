@@ -2,7 +2,7 @@
 
 Inkscape extension for exporting drawings into a KiCad PCB.
 
-![screenshot_125](https://i.imgur.com/gjFZZu3.jpg)
+![showcase](https://github.com/iharshadec/svg2shenzhen/blob/master/doc/resources/showcase.jpeg?raw=true)
 
 ## Features
 
