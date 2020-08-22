@@ -5,3 +5,4 @@ include/boost/*
 *.gch
 dist/8
 dist/*
+/bitmap2component
