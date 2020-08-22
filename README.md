@@ -80,6 +80,7 @@ Download and open [Example PCB](https://raw.githubusercontent.com/badgeek/svg2sh
 - [KitSprint ANORG 2018](http://wiki.sgmk-ssam.ch/wiki/KitSprint_ANORG_2018#Kicad_bitmap_import_for_Shenzhen_Ready)
 
 ## Videos
+
 - Drawing PCBs with Inkscape (FOSSDEM) with @kasbah of kitspace - https://www.youtube.com/watch?v=xXRPw7ItMaM
 - Making a PCB Badge for Hackaday Supercon! - https://www.youtube.com/watch?v=YqdBiOj8uXw
 - Understanding and Making PCB Art (mrtwinkletwinkle) https://www.youtube.com/watch?v=Sbkvza8cKQE
@@ -90,18 +91,20 @@ This project is developed independently and without any connection to funding or
 Donation is highly appreciated.
 Go to <https://www.patreon.com/badgeek> to become a patron and support this project
 
-<a href="https://www.patreon.com/badgeek">
-  <img src="https://i.imgur.com/ys5X3ZP.png" >
-</a>
+[![](https://i.imgur.com/ys5X3ZP.png)](https://www.patreon.com/badgeek)
 
 ## Contributors
 
-- Budi Prakosa [@badgeek](https://github.com/badgeek)
-- Kaspar Emanuel [@kasbah](https://github.com/kasbah)
+- Budi Prakosa [\@badgeek](https://github.com/badgeek)
+- Kaspar Emanuel [\@kasbah](https://github.com/kasbah)
 
 ## Credits
 
-* inkscape-export-layers - <https://github.com/jespino/inkscape-export-layers>
-* bitmap2component (kicad) - <https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component>
-* csv_output - <https://github.com/tbekolay/csv_output>
-* svg2mod - <https://github.com/svg2mod/svg2mod>
+* inkscape-export-layers -
+  <https://github.com/jespino/inkscape-export-layers>
+* bitmap2component (KiCad) -
+  <https://github.com/KiCad/kicad-source-mirror/tree/master/bitmap2component>
+* csv_output -
+  <https://github.com/tbekolay/csv_output>
+* svg2mod -
+  <https://github.com/svg2mod/svg2mod>
