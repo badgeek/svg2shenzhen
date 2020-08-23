@@ -719,7 +719,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
                 kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=drill_size)
 
-            return kicad_drill_string
+        return kicad_drill_string
 
     def flatten_bezier(self):
         layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Edge.Cuts"]'
