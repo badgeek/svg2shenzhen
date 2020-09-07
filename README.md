@@ -9,7 +9,7 @@ Inkscape extension for exporting drawings into a KiCad PCB.
 - Draw Any kind of shapes without restriction
 - Supports Drill Pad, and custom drill size
 - Supports Edge Cut (PCB Shape)
-- Tested on OSX, Windows and Linux
+- Works on OSX, Windows and Linux
 
 ## Install
 
