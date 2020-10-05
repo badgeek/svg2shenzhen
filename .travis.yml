@@ -1,77 +1,76 @@
 jobs:
   include:
-  - stage: unit tests
-    os: windows
-    workspaces:
-      create:
-        name: windows-binaries
-        paths:
-        - bitmap2component.exe
-    language: cpp
-    compiler: cl
-    script:
-    - choco install make
-    - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-    - unzip boost.zip
-    - mv boost src
-    - make
-  - stage: unit tests
-    os: linux
-    workspaces:
-      create:
-        name: linux-binaries
-        paths:
-        - bitmap2component_linux64
-    language: cpp
-    dist: trusty
-    script:
-    - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-    - unzip boost.zip
-    - mv boost src
-    - make
-    - mv bitmap2component bitmap2component_linux64
-  - stage: unit tests
-    os: osx
-    workspaces:
-      create:
-        name: osx-binaries
-        paths:
-        - bitmap2component_osx
-    osx_image: xcode12u
-    language: cpp
-    script:
-    - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-    - unzip boost.zip
-    - mv boost src
-    - make
-    - mv bitmap2component bitmap2component_osx
-  - stage: deploy
-    os: osx
-    language: minimal
-    sudo: true
-    workspaces:
-      use:
-      - linux-binaries
-      - osx-binaries
-      - windows-binaries
-    git:
-      clone: true
-    script:
-    - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
-    - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
-    - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
-    - mv home/travis/build/Sodium-Hydrogen/svg2shenzhen/bitmap2component_linux64 ./inkscape/svg2shenzhen/bitmap2component_linux64
-    - mv ./C:/Users/travis/build/Sodium-Hydrogen/svg2shenzhen/bitmap2component.exe
-      ./inkscape/svg2shenzhen/bitmap2component.exe
-    - mv ./bitmap2component_osx ./inkscape/svg2shenzhen/
-    - sh build.sh
-    deploy:
-      provider: releases
-      api_key:
-        secure: YTQy7sk6uuKvvln8MZmC+raWsT1Fkk+HJ+NS1LlO3TICHElKJvKxvjN7fEU1sQObCCizqMimqQ1ZLBsBMIj1NI8JLsqJsfMQgaU3OV4XbHHfYuDkTwFLC/epPYWshS89Rg7KwhAqD+Ws43PYiCXoRo9Z8Zosd4xxQbFY6K49Q01tHc+o1++nhYENjh2o/sNl7lJUU4oizsgQdsW/yMlJcwnXZHYj1A/sZYsZ3RjvdQ6KuUVVpYZx/QobHvC1VeORmJ66FT2gbamPPklqtr4WKY+965KmbiWrtFOto+mF/7nygIP2RrT4NdYDO9ded9swnBUyav+kKTKUW1l2GrvAJoiUs0vYC6J/H4irtHgXqh9rvbi77Whwpm9hZQFmXXzNjP3KWLH4H5q/nPA17cMI/by+kvuCNpAoEeHDK+4Tf3j+EgHs1it/usZgoA9NAMftArwzHfvQKnUB11pthnAQvk/S3U04sYXezvQkfLz6wxZcv1xMhuiU8Muz3gcXEFquVSjzFH6hgMfLSM/eFR3hVPU49EXDyF/5T1JlCaRI5fa9331nkGIOHjwlbrEwhyvWpW9FeT2RIXZIkQ37J5sd09Tzz7Cs8zCxB1S2mMDfn7KFkb/aP63JmRs4Otmr0k0+3BmuDhbFOcC6yFXTMl5es9ZQLHN/vl448QVZReuI27w=
-      file_glob: true
-      file: dist/*.*
-      skip_cleanup: true
-      on:
-        tags: true
-        branch: master
+    - stage: unit tests
+      os: windows
+      workspaces:
+        create:
+          name: windows-binaries
+          paths:
+          - bitmap2component.exe
+      language: cpp
+      compiler: cl
+      script:
+      - choco install make
+      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
+      - unzip boost.zip
+      - mv boost src
+      - make
+    - stage: unit tests
+      os: linux
+      workspaces:
+        create:
+          name: linux-binaries
+          paths:
+          - bitmap2component_linux64
+      language: cpp
+      dist: trusty
+      script:
+      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
+      - unzip boost.zip
+      - mv boost src
+      - make
+      - mv bitmap2component bitmap2component_linux64
+    - stage: unit tests
+      os: osx
+      workspaces:
+        create:
+          name: osx-binaries
+          paths:
+          - bitmap2component_osx
+      osx_image: xcode12u
+      language: cpp
+      script:
+      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
+      - unzip boost.zip
+      - mv boost src
+      - make
+      - mv bitmap2component bitmap2component_osx
+    - stage: deploy
+      os: osx
+      language: minimal
+      sudo: true
+      workspaces:
+        use:
+        - linux-binaries
+        - osx-binaries
+        - windows-binaries
+      git:
+        clone: true
+      script:
+      - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
+      - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
+      - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
+      - mv home/travis/build/Sodium-Hydrogen/svg2shenzhen/bitmap2component_linux64 ./inkscape/svg2shenzhen/bitmap2component_linux64
+      - mv ./C:/Users/travis/build/Sodium-Hydrogen/svg2shenzhen/bitmap2component.exe ./inkscape/svg2shenzhen/bitmap2component.exe
+      - mv ./bitmap2component_osx ./inkscape/svg2shenzhen/
+      - sh build.sh
+      deploy:
+        provider: releases
+        api_key:
+          secure: YTQy7sk6uuKvvln8MZmC+raWsT1Fkk+HJ+NS1LlO3TICHElKJvKxvjN7fEU1sQObCCizqMimqQ1ZLBsBMIj1NI8JLsqJsfMQgaU3OV4XbHHfYuDkTwFLC/epPYWshS89Rg7KwhAqD+Ws43PYiCXoRo9Z8Zosd4xxQbFY6K49Q01tHc+o1++nhYENjh2o/sNl7lJUU4oizsgQdsW/yMlJcwnXZHYj1A/sZYsZ3RjvdQ6KuUVVpYZx/QobHvC1VeORmJ66FT2gbamPPklqtr4WKY+965KmbiWrtFOto+mF/7nygIP2RrT4NdYDO9ded9swnBUyav+kKTKUW1l2GrvAJoiUs0vYC6J/H4irtHgXqh9rvbi77Whwpm9hZQFmXXzNjP3KWLH4H5q/nPA17cMI/by+kvuCNpAoEeHDK+4Tf3j+EgHs1it/usZgoA9NAMftArwzHfvQKnUB11pthnAQvk/S3U04sYXezvQkfLz6wxZcv1xMhuiU8Muz3gcXEFquVSjzFH6hgMfLSM/eFR3hVPU49EXDyF/5T1JlCaRI5fa9331nkGIOHjwlbrEwhyvWpW9FeT2RIXZIkQ37J5sd09Tzz7Cs8zCxB1S2mMDfn7KFkb/aP63JmRs4Otmr0k0+3BmuDhbFOcC6yFXTMl5es9ZQLHN/vl448QVZReuI27w=
+        file_glob: true
+        file: "dist/*.*"
+        skip_cleanup: true
+        on:
+          tags: true
+          branch: master
