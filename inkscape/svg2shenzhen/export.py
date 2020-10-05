@@ -265,13 +265,15 @@ class Svg2ShenzhenExport(inkex.Effect):
         pars.add_argument("--threshold", type=float, default=128.0)
         pars.add_argument("--openfactory", type=inkex.Boolean, default="true")
         pars.add_argument("--openkicad", type=inkex.Boolean, default="true")
+        pars.add_argument("--centermodule", type=inkex.Boolean, default=True)
+        pars.add_argument("--createpads", type=inkex.Boolean, default=False)
         pars.add_argument("--autoflatten", type=inkex.Boolean, default="true")
         pars.add_argument("--debug", type=inkex.Boolean, default=False)
 
     def coordToKicad(self,XYCoord):
         return [
-            (XYCoord[0]-self.bb_width_center)/self.bb_scaling_w,
-            (XYCoord[1]-self.bb_height_center)/self.bb_scaling_h,
+            (XYCoord[0]-(self.bb_width_center if self.options.centermodule else 0))/self.bb_scaling_w,
+            (XYCoord[1]-(self.bb_height_center if self.options.centermodule else 0))/self.bb_scaling_h,
         ]
 
     def setInkscapeScaling(self):
@@ -390,7 +392,9 @@ class Svg2ShenzhenExport(inkex.Effect):
             'path': options.path,
             'crop': options.crop,
             'filetype': options.filetype,
-            'threshold': options.threshold
+            'threshold': options.threshold,
+            'centermodule': options.centermodule,
+            'createpads': options.createpads
         }
 
         if os.path.exists(options_path):
@@ -454,11 +458,13 @@ class Svg2ShenzhenExport(inkex.Effect):
             os.remove(layer_dest_svg_path)
 
         if options.filetype == "kicad_pcb" or options.filetype == "kicad_module":
+            center = "true" if self.options.centermodule else "false"
+            createPads = "true" if self.options.createpads else "false"
             for i in range(0, len(layer_arguments), EXPORT_KICAD_MAX_PROCESSES):
                 processes = []
                 for _, layer_dest_png_path, layer_dest_kicad_path, layer_label, invert in layer_arguments[i:i+EXPORT_KICAD_MAX_PROCESSES]:
                     #export layer png to kicad
-                    p = self.exportToKicad(layer_dest_png_path, layer_dest_kicad_path, layer_label, invert)
+                    p = self.exportToKicad(layer_dest_png_path, layer_dest_kicad_path, layer_label, invert, center, createPads)
                     processes.append(p)
                 for p in processes:
                     p.communicate()
@@ -579,7 +585,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
 
 
-    def exportToKicad(self, png_path, output_path, layer_type, invert = "true"):
+    def exportToKicad(self, png_path, output_path, layer_type, invert = "true", center = "true", createPads = "false"):
         plugin_path = os.path.dirname(os.path.abspath(__file__))
 
         platform_system = platform.system()
@@ -592,7 +598,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             bitmap2component_exe = os.path.join(plugin_path, 'bitmap2component.exe')
 
         layer_name = self.layer_map[layer_type]
-        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_name, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
+        command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_name, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)), center, createPads )
         if (self.options.debug):
             inkex.utils.debug(command)
         return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

@@ -13,7 +13,10 @@
     <param name="threshold" type="int" min="0" max="255" _gui-text="Threshold (!)" _gui-description="Default: 5 - Define the threshold the black and white will have.">5</param>
     <param name="dpi" type="int" min="0" max="10000" _gui-text="Export DPI (!)" _gui-description="Default: 1200 - Define the Dots Per Inch to Export the Layers at, recommended is 1,200, max is 10,000.  Below 1,200 you may see artifacts due to the low resolution.">1200</param>
     <separator />
+    <param name="centermodule" type="boolean" _gui-text="Center Module (!)" _gui-description="Select this option if you would like the origin of module(s) to be centered instead of the top left corner.">true</param>
+    <param name="createpads" type="boolean" _gui-text="Create Metal Pads (!)" _gui-description="Select this option if you want all copper layers to be converted to pads.">false</param>
     <param name="autoflatten" type="boolean" _gui-text="Flatten Bezier (!)" _gui-description="Select this option if you have not flattened the Bezier Curves on your Edge.Cut layer.  If this is not the first time you have exported this drawing do not check this option.">false</param>
+    <separator />
     <param name="openfactory" type="boolean" gui-text="Open PCBWay (!)" _gui-description="Opens the PCBWay website with an affiliate link for you to submit an order.">false</param>
     <param name="openkicad" type="boolean" gui-text="Open KiCad (!)" _gui-description="Opens the KiCad for you.">false</param>
     <param name="debug" type="boolean" _gui-text="Debug Mode" _gui-description="Only necessary for troubleshooting.">false</param>
