@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import warnings
 import sys
 sys.path.append('/usr/share/inkscape/extensions')
 import inkex
@@ -17,17 +18,52 @@ from lxml import etree
 
 identity_m = [[1.0,0.0,0.0],[0.0,1.0,0.0]]
 
+kicadLayers = {
+    "layerDrill" : "Drill",
+    "layerDwgs_user" : "Dwgs.User",
+    "layerF_Silks" : "F.SilkS",
+    "layerF_Paste" : "F.Paste",
+    "layerF_mask" : "F.Mask",
+    "layerF_cu" : "F.Cu",
+    "layerB_silks" : "B.SilkS",
+    "layerB_paste" : "B.Paste",
+    "layerB_mask" : "B.Mask",
+    "layerB_cu" : "B.Cu",
+    "layerEdge_Cuts" : "Edge.Cuts",
+    "layerF_Adhes" : "F.Adhes",
+    "layerB_Adhes" : "B.Adhes",
+    "layerCmts_User" : "Cmts.User",
+    "layerEco1_User" : "Eco1.User",
+    "layerEco2_User" : "Eco2.User",
+    "layerMargin" : "Margin",
+    "layerB_CrtYd" : "B.CrtYd",
+    "layerF_CrtYd" : "F.CrtYd",
+    "layerB_Fab" : "B.Fab",
+    "layerF_Fab" : "F.Fab"
+}
+kicadLayersSelected = {}
+
 class Svg2ShenzhenPrepare(inkex.Effect):
     def __init__(self):
-        """init the effetc library and get options from gui"""
+        """init the effect library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("--docwidth", action="store", type="float", dest="docwidth", default=0.0)
-        self.OptionParser.add_option("--docheight", action="store", type="float", dest="docheight", default=0.0)
 
         self.bb_width_center = 0
         self.bb_height_center = 0
         self.bb_scaling_h = 0
         self.bb_scaling_w = 0
+
+
+    def add_arguments(self, pars):
+        pars.add_argument("--docwidth", type=float, default=0.0)
+        pars.add_argument("--docheight", type=float, default=0.0)
+        pars.add_argument("--name")
+        pars.add_argument("--docGrid")
+        # Prepare the Arguments for all of the Layers 
+        for key, value in kicadLayers.items():
+           argumentKey = "--" + key
+           pars.add_argument(argumentKey)
+
 
     def coordToKicad(self,XYCoord):
         return [
@@ -62,19 +98,19 @@ class Svg2ShenzhenPrepare(inkex.Effect):
 
     def createLayer(self, layer_name):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
-        layer = inkex.etree.SubElement(svg, 'g')
+        layer = etree.SubElement(svg, 'g')
         layer.set(inkex.addNS('label', 'inkscape'), '%s' % layer_name)
         layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
         return layer
 
     def createWhitebg(self):
-        rect = inkex.etree.Element(inkex.addNS('rect','svg'))
+        rect = etree.Element(inkex.addNS('rect','svg'))
         rect.set('x', "0")
         rect.set('y', "0")
         rect.set('width', str(self.doc_width/self.bb_scaling_w))
         rect.set('height', str(self.doc_height/self.bb_scaling_h))
         style = {'fill' : '#FFFFFF', 'fill-opacity' : '1', 'stroke': 'none'}
-        rect.set('style', formatStyle(style))
+        rect.set('style', str(inkex.Style(style)))
         return rect
 
     def findLayer(self, layerName):
@@ -90,7 +126,7 @@ class Svg2ShenzhenPrepare(inkex.Effect):
     def addStamp(self,layer, textStr):
 
         # Create text element
-        text = inkex.etree.Element(inkex.addNS('text','svg'))
+        text = etree.Element(inkex.addNS('text','svg'))
         text.text = str(textStr)
 
         # Set text position to center of document.
@@ -99,13 +135,13 @@ class Svg2ShenzhenPrepare(inkex.Effect):
 
         # Center text horizontally with CSS style.
         style = {'text-align' : 'center', 'text-anchor': 'middle'}
-        text.set('style', formatStyle(style))
+        text.set('style', str(inkex.Style(style)))
 
         # Connect elements together.
         layer.append(text)
 
 
-    def prepareDocument(self):
+    def prepareDocument(self, options):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         layers = []
 
@@ -132,75 +168,22 @@ class Svg2ShenzhenPrepare(inkex.Effect):
             rect = self.createWhitebg()
             white_layer.append(rect)
 
-        if ("F.Cu" not in layers and "F.Cu-disabled" not in layers):
-            self.createLayer("F.Cu")
+        # Create the Selected Layers
+        kicadLayersArray = list(kicadLayers.items());
 
-        if ("B.Cu-disabled" not in layers and "B.Cu" not in layers):
-            self.createLayer("B.Cu-disabled")
+        for key, value in reversed(kicadLayersArray):
+           disabledValue = '%s-disabled' % (value)
+           selectedValue = getattr(options, key)
+           if selectedValue == "true" and value not in layers and disabledValue not in layers:
+               self.createLayer(value)
 
-        if ("B.Adhes-disabled" not in layers and "B.Adhes" not in layers):
-            self.createLayer("B.Adhes-disabled")
-
-        if ("F.Adhes-disabled" not in layers and "F.Adhes" not in layers):
-            self.createLayer("F.Adhes-disabled")
-
-        if ("B.Paste-disabled" not in layers and "B.Paste" not in layers):
-            self.createLayer("B.Paste-disabled")
-
-        if ("F.Paste-disabled" not in layers and "F.Paste" not in layers):
-            self.createLayer("F.Paste-disabled")
-
-        if ("B.SilkS-disabled" not in layers and "B.SilkS" not in layers):
-            self.createLayer("B.SilkS-disabled")
-
-        if ("F.SilkS-disabled" not in layers and "F.SilkS" not in layers):
-            self.createLayer("F.SilkS-disabled")
-
-        if ("B.Mask-disabled" not in layers and "B.Mask" not in layers):
-            self.createLayer("B.Mask-disabled")
-
-        if ("F.Mask-disabled" not in layers and "F.Mask" not in layers):
-            self.createLayer("F.Mask-disabled")
-
-        if ("Dwgs.User-disabled" not in layers and "Dwgs.User" not in layers):
-            self.createLayer("Dwgs.User-disabled")
-
-        if ("Cmts.User-disabled" not in layers and "Cmts.User" not in layers):
-            self.createLayer("Cmts.User-disabled")
-
-        if ("Eco1.User-disabled" not in layers and "Eco1.User" not in layers):
-            self.createLayer("Eco1.User-disabled")
-
-        if ("Eco2.User-disabled" not in layers and "Eco2.User" not in layers):
-            self.createLayer("Eco2.User-disabled")
-
-        if ("Edge.Cuts" not in layers):
-            self.createLayer("Edge.Cuts")
-
-        if ("Margin-disabled" not in layers and "Margin" not in layers):
-            self.createLayer("Margin-disabled")
-
-        if ("B.CrtYd-disabled" not in layers and "B.CrtYd" not in layers):
-            self.createLayer("B.CrtYd-disabled")
-
-        if ("F.CrtYd-disabled" not in layers and "F.CrtYd" not in layers):
-            self.createLayer("F.CrtYd-disabled")
-
-        if ("B.Fab-disabled" not in layers and "B.Fab" not in layers):
-            self.createLayer("B.Fab-disabled")
-
-        if ("F.Fab-disabled" not in layers and "F.Fab" not in layers):
-            self.createLayer("F.Fab-disabled")
-
-        if ("Drill" not in layers):
-            self.createLayer("Drill")
 
     def setDocumentGrid(self):
         doc_view = self.document.xpath('//sodipodi:namedview',namespaces=inkex.NSS)[0]
         doc_view.attrib['borderlayer'] = "true"
         doc_view.attrib['showgrid'] = "true"
 
-        grid = inkex.etree.Element(inkex.addNS('grid','inkscape'))
+        grid = etree.Element(inkex.addNS('grid','inkscape'))
         grid.set('spacingx', '2.54')
         grid.set('spacingy', '2.54')
         grid.set('empspacing', '1')
@@ -217,10 +200,11 @@ class Svg2ShenzhenPrepare(inkex.Effect):
     def effect(self):
         self.setDocumentSquare(self.options.docwidth, self.options.docheight)
         self.setInkscapeScaling()
-        self.prepareDocument()
-        self.setDocumentGrid()
+        self.prepareDocument(self.options)
+        if self.options.docGrid == "true":
+            self.setDocumentGrid()
         self.setDefaultUnits()
-       
+        #warnings.warn(getattr(self.options, "layerF_Silk"))
 
     def prepareLogo(self, lyr):
         logo_xml = """
@@ -331,7 +315,7 @@ class Svg2ShenzhenPrepare(inkex.Effect):
 
 def _main():
     e = Svg2ShenzhenPrepare()
-    e.affect()
+    e.run()
     exit()
 
 if __name__ == "__main__":
