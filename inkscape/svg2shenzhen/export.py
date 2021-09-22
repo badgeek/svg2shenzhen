@@ -7,18 +7,17 @@ import tempfile
 import shutil
 import copy
 import platform
+import simplepath
+import simpletransform
+from simplestyle import *
+import cubicsuperpath
+import cspsubdiv
 import webbrowser
 import hashlib
 import xml.etree.ElementTree as ET
 import pickle
 from copy import deepcopy
-from inkex import bezier
-from inkex.transforms import Transform
-from pathlib import Path
 
-
-homePath = str()
-homePath = Path.home()
 
 EXPORT_PNG_MAX_PROCESSES = 3
 EXPORT_KICAD_MAX_PROCESSES = 2
@@ -222,6 +221,17 @@ class Svg2ShenzhenExport(inkex.Effect):
     def __init__(self):
         """init the effect library and get options from gui"""
         inkex.Effect.__init__(self)
+        self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
+        self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
+        self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
+        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=600)
+        self.OptionParser.add_option("--threshold", action="store", type="float", dest="threshold", default=128.0)
+        self.OptionParser.add_option("--openfactory", action="store", type="inkbool", dest="openfactory", default="true")
+        self.OptionParser.add_option("--openkicad", action="store", type="inkbool", dest="openkicad", default="true")
+        self.OptionParser.add_option("--autoflatten", action="store", type="inkbool", dest="autoflatten", default="true")
+        self.OptionParser.add_option("--debug", action="store", type="inkbool", dest="debug", default=False)
+
+
         self.doc_width = 0
         self.doc_height = 0
 
@@ -257,16 +267,6 @@ class Svg2ShenzhenExport(inkex.Effect):
             # 'Edge.Cuts' : "Edge.Cuts"
         }
 
-    def add_arguments(self, pars):
-        pars.add_argument("--path", default=homePath)
-        pars.add_argument('-f', '--filetype', default='jpeg', help='Exported file type')
-        pars.add_argument("--crop", type=inkex.Boolean, default=False)
-        pars.add_argument("--dpi", type=int, default=600)
-        pars.add_argument("--threshold", type=float, default=128.0)
-        pars.add_argument("--openfactory", type=inkex.Boolean, default="true")
-        pars.add_argument("--openkicad", type=inkex.Boolean, default="true")
-        pars.add_argument("--autoflatten", type=inkex.Boolean, default="true")
-        pars.add_argument("--debug", type=inkex.Boolean, default=False)
 
     def coordToKicad(self,XYCoord):
         return [
@@ -275,6 +275,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         ]
 
     def setInkscapeScaling(self):
+
         root = self.document.getroot()
         height = float(root.get('height').replace("mm", ""))
         width = float(root.get('width').replace("mm", ""))
@@ -342,13 +343,8 @@ class Svg2ShenzhenExport(inkex.Effect):
     def processExportLayer(self):
         options = self.options
 
-        if os.path.dirname(os.getcwd()) == options.path:
-            inkex.errormsg('EXPORT ERROR! Please Select A Directory To Export To!')
-            exit()
-        else:
-            output_path = os.path.expanduser(options.path)
-
-        curfile = self.options.input_file
+        output_path = os.path.expanduser(options.path)
+        curfile = self.args[-1]
         layers = self.get_layers(curfile)
         name = self.get_name()
         kicad_pcb_file = "{}.kicad_pcb".format(name)
@@ -383,25 +379,22 @@ class Svg2ShenzhenExport(inkex.Effect):
         kicad_pro_path = os.path.join(output_path, kicad_project_file )
         kicad_mod_path = os.path.join(output_path, kicad_mod_file)
 
-        options_path = os.path.join(cache_folder_path, 'export_options.pickle')
-
-        curr_options = {
-            'dpi': options.dpi,
-            'path': options.path,
-            'crop': options.crop,
-            'filetype': options.filetype,
-            'threshold': options.threshold
-        }
+        options_path = os.path.join(cache_folder_path, 'options.pickle')
 
         if os.path.exists(options_path):
-            with open(options_path, 'rb') as f:
+            with open(options_path, 'r') as f:
                 prev_options = pickle.load(f)
-            ignore_hashes = prev_options != curr_options
+            dpi_equal = prev_options.dpi == options.dpi
+            path_equal = prev_options.path == options.path
+            crop_equal = prev_options.crop == options.crop
+            filetype_equal = prev_options.filetype == options.filetype
+            threshold_equal = prev_options.threshold == options.threshold
+            ignore_hashes = not dpi_equal or not path_equal or not crop_equal or not filetype_equal or not threshold_equal
         else:
             ignore_hashes = True
 
-        with open(options_path, 'wb') as f:
-            pickle.dump(curr_options, f)
+        with open(options_path, 'w') as f:
+            pickle.dump(options, f)
 
         layer_arguments = []
         temp_svg_paths = []
@@ -425,7 +418,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                   prev_hash_sum = f.read()
 
             # generate unique filename each layer
-            temp_name = next(tempfile._get_candidate_names()) + ".svg"
+            temp_name = next(tempfile._get_candidate_names())
             layer_dest_svg_path = os.path.join(cache_folder_path, temp_name)
             hash_sum = self.export_layers(layer_dest_svg_path, show_layer_ids)
             temp_svg_paths.append(layer_dest_svg_path)
@@ -448,7 +441,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                 p = self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
                 processes.append(p)
             for p in processes:
-                p.communicate()
+                p.wait()
 
         for layer_dest_svg_path in temp_svg_paths:
             os.remove(layer_dest_svg_path)
@@ -461,7 +454,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                     p = self.exportToKicad(layer_dest_png_path, layer_dest_kicad_path, layer_label, invert)
                     processes.append(p)
                 for p in processes:
-                    p.communicate()
+                    p.wait()
         else:
             return
 
@@ -488,7 +481,7 @@ class Svg2ShenzhenExport(inkex.Effect):
                 f.write(PCB_PROJECT_FILE)
 
             if (options.openkicad):
-                self.openKicad(kicad_pcb_path).communicate()
+                self.openKicad(kicad_pcb_path)
 
         elif options.filetype == "kicad_module":
             kicad_modules_string = '(module "{}" (layer F.Cu)'.format(name)
@@ -552,7 +545,7 @@ class Svg2ShenzhenExport(inkex.Effect):
             layer_label_name = layer_label.replace("-invert", "")
             layer_label_name = layer_label_name.replace("-auto", "")
 
-            if  layer_label_name in self.layer_map.keys():
+            if  layer_label_name in self.layer_map.iterkeys():
                 layer_type = "export"
                 layer_label = layer_label
             elif layer_label.lower().startswith("[fixed] "):
@@ -575,7 +568,7 @@ class Svg2ShenzhenExport(inkex.Effect):
         else:
             command = "start %s" % (kicad_file_path)
 
-        return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 
@@ -594,16 +587,16 @@ class Svg2ShenzhenExport(inkex.Effect):
         layer_name = self.layer_map[layer_type]
         command =  "\"%s\" \"%s\" \"%s\" %s %s %s %s" % (bitmap2component_exe, png_path, output_path, layer_name, invert , str(int(self.options.dpi)) , str(int(self.options.threshold)))
         if (self.options.debug):
-            inkex.utils.debug(command)
-        return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            inkex.debug(command)
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     def exportToPng(self, svg_path, output_path):
-        area_param = '-D' if self.options.crop else '-C'
-        command = "inkscape %s -d %s -o \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
+        area_param = '-D' if self.options.crop else 'C'
+        command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
         if (self.options.debug):
-            inkex.utils.debug(command)
-        return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            inkex.debug(command)
+        return subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     def exportEdgeCut(self, kicad_mod=False):
@@ -635,13 +628,14 @@ class Svg2ShenzhenExport(inkex.Effect):
 
             layer_trans = layer.get('transform')
             if layer_trans:
-                layer_m = Transform(layer_trans).matrix
+                layer_m = simpletransform.parseTransform(layer_trans)
             else:
                 layer_m = IDENTITY_MATRIX
 
             nodePath = ('//svg:g[@inkscape:groupmode="layer"][%d]/descendant::svg:path') % i
             for node in self.document.getroot().xpath(nodePath, namespaces=inkex.NSS):
-                p = node.path.to_arrays()
+                d = node.get('d')
+                p = simplepath.parsePath(d)
 
                 points = []
                 if p:
@@ -649,7 +643,8 @@ class Svg2ShenzhenExport(inkex.Effect):
                     if p[0][0] == 'M':
                         t = node.get('transform')
                         if t:
-                            trans = (Transform(layer_m)*Transform(t)).matrix
+                            m = simpletransform.parseTransform(t)
+                            trans = simpletransform.composeTransform(layer_m, m)
                         else:
                             trans = layer_m
 
@@ -657,7 +652,8 @@ class Svg2ShenzhenExport(inkex.Effect):
                             if path[0] != "Z":
                                 x = (path[1][0])
                                 y = (path[1][1])
-                                xy = Transform(trans).apply_to_point([x,y])
+                                xy = [x,y]
+                                simpletransform.applyTransformToPoint(trans,xy)
                                 points.append(self.coordToKicad([(xy[0]-x0), xy[1]*mirror-y0]))
 
                         points_count = len(points)
@@ -711,7 +707,7 @@ class Svg2ShenzhenExport(inkex.Effect):
 
             layer_trans = layer.get('transform')
             if layer_trans:
-                layer_m = Transform(layer_trans).matrix
+                layer_m = simpletransform.parseTransform(layer_trans)
             else:
                 layer_m = IDENTITY_MATRIX
 
@@ -728,13 +724,15 @@ class Svg2ShenzhenExport(inkex.Effect):
 
                 t = node.get('transform')
 
+                pt = [cx, cy]
+
                 if t:
-                    m = Transform(t).matrix
-                    trans = (Transform(layer_m)*Transform(m)).matrix
+                    m = simpletransform.parseTransform(t)
+                    trans = simpletransform.composeTransform(layer_m, m)
                 else:
                     trans = layer_m
 
-                pt = Transform(trans).apply_to_point([cx, cy])
+                simpletransform.applyTransformToPoint(trans,pt)
                 padCoord = self.coordToKicad(pt)
 
                 kicad_drill_string += pad_template.format(x=padCoord[0], y=padCoord[1], n=count, d=drill_size)
@@ -748,8 +746,8 @@ class Svg2ShenzhenExport(inkex.Effect):
             for node in layer.xpath(nodePath, namespaces=inkex.NSS):
                 if node.tag == inkex.addNS('path','svg'):
                     d = node.get('d')
-                    p = inkex.Path(d).to_superpath()
-                    bezier.cspsubdiv(p, 0.01)
+                    p = cubicsuperpath.parsePath(d)
+                    cspsubdiv.cspsubdiv(p, 0.01)
                     np = []
                     for sp in p:
                         first = True
@@ -759,11 +757,11 @@ class Svg2ShenzhenExport(inkex.Effect):
                                 cmd = 'M'
                             first = False
                             np.append([cmd, [csp[1][0], csp[1][1]]])
-                            node.set('d', str(inkex.Path(np)))
+                            node.set('d', simplepath.formatPath(np))
 
 def _main():
     e = Svg2ShenzhenExport()
-    e.run()
+    e.affect()
     exit()
 
 if __name__ == "__main__":

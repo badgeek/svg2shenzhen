@@ -3,42 +3,11 @@
     <_name>1. Prepare Document</_name>
     <id>net.svg2shenzhen.prepare.doc</id>
     <dependency type="executable" location="extensions">svg2shenzhen/prepare.py</dependency>
-    <param name="name" type="notebook">
-        <page name="Tab1" _gui-text="General">
-            <label appearance="header">Prepare Document For KiCad Export</label>
-            <param name="docwidth" type="float" min="0.0" max="100000.0" _gui-text="Document Width (mm)">100</param>
-            <param name="docheight" type="float" min="0.0" max="100000.0" _gui-text="Document Height (mm)">100</param>
-            <separator />
-            <param name="descr" type="description" appearance="header" _gui-description="Layers can be disabled after being created by adding '-disabled' to the layer name e.g. 'F.SilkS-disabled'">Select Layers To Use (!)</param>
-            <param name="layerDrill" type="boolean" gui-text="Drill" indent="2">true</param>
-            <param name="layerDwgs_user" type="boolean" gui-text="Dwgs.User" indent="2">true</param>
-            <param name="layerF_Silks" type="boolean" gui-text="F.SilkS" indent="2">true</param>
-            <param name="layerF_mask" type="boolean" gui-text="F.Mask" indent="2">true</param>
-            <param name="layerF_cu" type="boolean" gui-text="F.Cu" indent="2">true</param>
-            <param name="layerB_silks" type="boolean" gui-text="B.SilkS" indent="2">true</param>
-            <param name="layerB_mask" type="boolean" gui-text="B.Mask" indent="2">true</param>
-            <param name="layerB_cu" type="boolean" gui-text="B.Cu" indent="2">true</param>
-            <param name="layerEdge_Cuts" type="boolean" gui-text="Edge.Cuts" indent="2"></param>
-        </page>
-        <page name="Tab2" _gui-text="Other">
-            <param name="docGrid" type="boolean" _gui-text="Enable Grid View">false</param>
-            <separator />
-            <label appearance="header">Optional Layers:</label>
-            <param name="layerF_Paste" type="boolean" gui-text="F.Paste" indent="2">false</param>
-            <param name="layerB_paste" type="boolean" gui-text="B.Paste" indent="2">false</param>
-            <param name="layerF_Adhes" type="boolean" gui-text="F.Adhes" indent="2">false</param>
-            <param name="layerB_Adhes" type="boolean" gui-text="B.Adhes" indent="2">false</param>
-            <param name="layerCmts_User" type="boolean" gui-text="Cmts.User" indent="2">false</param>
-            <param name="layerEco1_User" type="boolean" gui-text="Eco1.User" indent="2">false</param>
-            <param name="layerEco2_User" type="boolean" gui-text="Eco2.User" indent="2">false</param>
-            <param name="layerMargin" type="boolean" gui-text="Margin" indent="2">false</param>
-            <param name="layerB_CrtYd" type="boolean" gui-text="B.CrtYd" indent="2">false</param>
-            <param name="layerF_CrtYd" type="boolean" gui-text="F.CrtYd" indent="2">false</param>
-            <param name="layerB_Fab" type="boolean" gui-text="B.Fab" indent="2">false</param>
-            <param name="layerF_Fab" type="boolean" gui-text="F.Fab" indent="2">false</param>
-        </page>
-    </param>
-    <label>SVG2SHENZHEN SVGSZ_VER</label>
+	<param name="help" type="description">Prepare document for Kicad Export</param>
+    <param name="docwidth" type="float" min="0.0" max="100000.0" _gui-text="Document width (mm)">100</param>
+    <param name="docheight" type="float" min="0.0" max="100000.0" _gui-text="Document height (mm)">100</param>
+    <param name="version" type="description">SVG2SHENZHEN SVGSZ_VER</param>
+
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu _name="Prepare Document">

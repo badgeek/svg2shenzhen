@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>About</_name>
+    <_name>0. Help</_name>
     <id>net.svg2shenzhen.about.me</id>
 	<param name='active-tab' type="notebook">
-		<page name='about' _gui-text='About'>	
-			<label appearance="header">Svg2Shenzhen Ver. SVGSZ_VER</label>
-			<separator />
-<_param name="help" type="description" xml:space="preserve">Inkscape Extension to Export Drawings as a KiCad Module or KiCad Project
 
-To get updates, get help, review the source, or contribute please visit the project's GitHub page.
+	<page name='about' _gui-text='About'>	
+		<_param name="help" type="description">		
+Svg2Shenzhen version SVGSZ_VER
+Inkscape extension for exporting drawing into Kicad PCB
 
-Thank you to everyone who has contributed to Svg2Shenzhen.</_param>
-			<separator />
-			<label>Project GitHub</label>
-			<label indent="2" appearance="url">https://github.com/badgeek/svg2shenzhen</label>
-			<separator />
-			<label>Support the Author:</label>
-			<label indent="2" appearance="url">https://patreon.com/badgeek</label>
-		</page>
+Get New Update:
+https://github.com/badgeek/svg2shenzhen
+
+Support this software:
+https://patreon.com/badgeek
+
+
+		</_param>
+	</page>
+
 	</param>	
     <effect needs-live-preview="false">
         <effects-menu _name="About">
@@ -25,4 +27,5 @@ Thank you to everyone who has contributed to Svg2Shenzhen.</_param>
 		</effects-menu>
 		<object-type>all</object-type>
     </effect>
+
 </inkscape-extension>

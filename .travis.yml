@@ -1,76 +1,24 @@
-jobs:
-  include:
-    - stage: unit tests
-      os: windows
-      workspaces:
-        create:
-          name: windows-binaries
-          paths:
-            - bitmap2component.exe
-      language: cpp
-      compiler: cl
-      script:
-      - choco install make
-      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-      - unzip boost.zip
-      - mv boost src
-      - make
-    - stage: unit tests
-      os: linux
-      workspaces:
-        create:
-          name: linux-binaries
-          paths:
-            - bitmap2component_linux64
-      language: cpp
-      dist: trusty
-      script:
-      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-      - unzip boost.zip
-      - mv boost src
-      - make
-      - mv bitmap2component bitmap2component_linux64
-    - stage: unit tests
-      os: osx
-      workspaces:
-        create:
-          name: osx-binaries      
-          paths:
-            - bitmap2component_osx
-      osx_image: xcode12u
-      language: cpp
-      script:
-      - wget https://github.com/badgeek/svg2shenzhen/files/2404261/boost.zip
-      - unzip boost.zip
-      - mv boost src
-      - make
-      - mv bitmap2component bitmap2component_osx
-    - stage: deploy
-      os: osx
-      language: minimal
-      sudo: true
-      workspaces:
-        use:
-          - linux-binaries
-          - osx-binaries
-          - windows-binaries
-      git:
-        clone: true
-      script:
-        - tar -zxvf ${CASHER_DIR}/linux-binaries-fetch.tgz
-        - tar -zxvf ${CASHER_DIR}/osx-binaries-fetch.tgz
-        - tar -zxvf ${CASHER_DIR}/windows-binaries-fetch.tgz
-        - mv home/travis/build/badgeek/svg2shenzhen/bitmap2component_linux64 ./inkscape/svg2shenzhen/bitmap2component_linux64
-        - mv ./C:/Users/travis/build/badgeek/svg2shenzhen/bitmap2component.exe ./inkscape/svg2shenzhen/bitmap2component.exe
-        - mv ./bitmap2component_osx ./inkscape/svg2shenzhen/
-        - sh build.sh
-      deploy:
-        provider: releases
-        api_key:
-          secure: KLiKx9YA0IMonTKywaxcdO00YCtXffJTmPlZj1edGAV1aKiWr8u9l5iW9qluNgUI/zeUCmJCJZj0V/k6U29E5lAbGRkngXfA0wqG3E4AxVPVjPQ17m2bipKJJRQjstrSgJCGjyNiBWVcAc3M2Ht/1TWEXFgzkjkBS8y0KdxO5vELgQ0e3MkTp+jTPqoPF7ap455nDydx5ck5wT9MWr+/JWcwnWcTzmVNemSeuwdp9q5xIlqhU0V8rFGBSf3NvRtIhH8DfCbEB/ZHF+qJk1AHFHP3rDaIEmCdvhBcZq3nNQToRKNpta4PO2OOq77ZHhck1oSqj/bLfIgD0m54fef6hyNLBsZskKxvWvC/ddCUolL5gQIntV9u6d8R50jYGTOIFjp9TrBoEgLa795Xiv4UfeXExc6C5lvZS6qOxT5gU0LnINb8lBBJIVK+/a4xDDE/F8IcGH+EeIKsGnncnH5Zb048bddGh/YHF5SLc7VjdCGFjMg4xp/RiBxrCPg545wmVf6GppUlpoYwC+rGjB/P+USpatYNIRW1Neh4+CAosPz8rrYA9g5tiW6SUdG4f0a98LlFcGCwQ79XwVwZGgyh+GhTSKGySypCAE7n0YfyVFcpR9USKqBcCRQVafAJm2B/59zx2Qfm2zOyEIwcfpURrFRMRnvolaaus0UmqSi51S0=
-        file_glob: true
-        file: "dist/*.*"
-        skip_cleanup: true
-        on:
-          tags: true
-          branch: master 
+language: node_js
+node_js:
+- '9'
+env:
+  global:
+  - ENCRYPTION_LABEL: cabb09466128
+  - COMMIT_AUTHOR_EMAIL: travis@cocomake.co
+  - COMMIT_AUTHOR_NAME: Travis CI
+before_install:
+- uname -a
+- sudo apt-get -qq update
+- sudo apt-get install zip
+script:
+- bash build.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: KLiKx9YA0IMonTKywaxcdO00YCtXffJTmPlZj1edGAV1aKiWr8u9l5iW9qluNgUI/zeUCmJCJZj0V/k6U29E5lAbGRkngXfA0wqG3E4AxVPVjPQ17m2bipKJJRQjstrSgJCGjyNiBWVcAc3M2Ht/1TWEXFgzkjkBS8y0KdxO5vELgQ0e3MkTp+jTPqoPF7ap455nDydx5ck5wT9MWr+/JWcwnWcTzmVNemSeuwdp9q5xIlqhU0V8rFGBSf3NvRtIhH8DfCbEB/ZHF+qJk1AHFHP3rDaIEmCdvhBcZq3nNQToRKNpta4PO2OOq77ZHhck1oSqj/bLfIgD0m54fef6hyNLBsZskKxvWvC/ddCUolL5gQIntV9u6d8R50jYGTOIFjp9TrBoEgLa795Xiv4UfeXExc6C5lvZS6qOxT5gU0LnINb8lBBJIVK+/a4xDDE/F8IcGH+EeIKsGnncnH5Zb048bddGh/YHF5SLc7VjdCGFjMg4xp/RiBxrCPg545wmVf6GppUlpoYwC+rGjB/P+USpatYNIRW1Neh4+CAosPz8rrYA9g5tiW6SUdG4f0a98LlFcGCwQ79XwVwZGgyh+GhTSKGySypCAE7n0YfyVFcpR9USKqBcCRQVafAJm2B/59zx2Qfm2zOyEIwcfpURrFRMRnvolaaus0UmqSi51S0=
+  file_glob: true
+  file: "dist/*.zip"
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: master 
