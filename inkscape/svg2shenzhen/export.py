@@ -15,7 +15,7 @@ from copy import deepcopy
 from inkex import bezier
 from inkex.transforms import Transform
 from pathlib import Path
-
+import re
 
 homePath = str()
 homePath = Path.home()
@@ -276,8 +276,8 @@ class Svg2ShenzhenExport(inkex.Effect):
 
     def setInkscapeScaling(self):
         root = self.document.getroot()
-        height = float(root.get('height').replace("mm", ""))
-        width = float(root.get('width').replace("mm", ""))
+        height = float(re.sub(r'[a-zA-Z]+', "", root.get('height')))
+        width = float(re.sub(r'[a-zA-Z]+', "", root.get('width')))
 
         self.doc_width = width
         self.doc_height = height
@@ -293,8 +293,8 @@ class Svg2ShenzhenExport(inkex.Effect):
 
     def setDocumentSquare(self):
         root = self.document.getroot()
-        height = float(root.attrib['height'].replace("mm", ""))
-        width =  float(root.attrib['width'].replace("mm", ""))
+        height = float(re.sub(r'[a-zA-Z]+', "", root.attrib['height']))
+        width =  float(re.sub(r'[a-zA-Z]+', "", root.attrib['width']))
 
         if (width > height):
             root.attrib['height'] = str(width) + "mm"
