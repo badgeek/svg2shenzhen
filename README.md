@@ -1,5 +1,9 @@
 # Svg2Shenzhen
 
+# Sadly this project is discontinued
+
+There are better tools to create artistic pcb here is one that i recommend: https://github.com/wntrblm/Gingerbread
+
 Inkscape extension for exporting drawings into a KiCad PCB.
 
 ![showcase](https://github.com/badgeek/svg2shenzhen/blob/master/doc/resources/showcase.jpeg?raw=true)
