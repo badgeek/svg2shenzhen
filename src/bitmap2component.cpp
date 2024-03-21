@@ -71,6 +71,8 @@ public:
     potrace_path_t*    m_Paths;     // the list of paths, from potrace (list of lines and bezier curves)
     FILE* m_Outfile;                // File to create
     const char * m_CmpName;                 // The string used as cmp/footprint name
+    bool m_CenterOrigin;
+    bool m_CreatePads;
 
 public:
     BITMAPCONV_INFO();
@@ -134,7 +136,8 @@ BITMAPCONV_INFO::BITMAPCONV_INFO()
 
 int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
                       OUTPUT_FMT_ID aFormat, int aDpi_X, int aDpi_Y,
-                      BMP2CMP_MOD_LAYER aModLayer, const char * aLayerName = NULL )
+                      BMP2CMP_MOD_LAYER aModLayer, const char * aLayerName = NULL,
+		      bool center = true, bool createPad = false)
 {
     potrace_param_t* param;
     potrace_state_t* st;
@@ -168,6 +171,8 @@ int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
     BITMAPCONV_INFO info;
     info.m_PixmapWidth  = aPotrace_bitmap->w;
     info.m_PixmapHeight = aPotrace_bitmap->h;     // the bitmap size in pixels
+    info.m_CreatePads   = createPad;
+    info.m_CenterOrigin = center;
     info.m_Paths   = st->plist;
     info.m_Outfile = aOutfile;
 
@@ -343,8 +348,14 @@ void BITMAPCONV_INFO::OuputOnePolygon( SHAPE_LINE_CHAIN & aPolygon, const char* 
     int ii, jj;
     VECTOR2I currpoint;
 
-    int   offsetX = (int)( m_PixmapWidth / 2 * m_ScaleX );
-    int   offsetY = (int)( m_PixmapHeight / 2 * m_ScaleY );
+    int   offsetX = 0;
+    int   offsetY = 0;
+
+    if(m_CenterOrigin)
+    {
+        offsetX = (int)( m_PixmapWidth / 2 * m_ScaleX );
+        offsetY = (int)( m_PixmapHeight / 2 * m_ScaleY );
+    }
 
     const VECTOR2I startpoint = aPolygon.CPoint( 0 );
 
@@ -374,27 +385,59 @@ void BITMAPCONV_INFO::OuputOnePolygon( SHAPE_LINE_CHAIN & aPolygon, const char* 
     case PCBNEW_KICAD_MOD:
     {
         double width = 0.01;     // outline thickness in mm
-        fprintf( m_Outfile, "  (fp_poly (pts" );
+
+	const char* copper = "Cu";
+	const char* indent = "    ";
+	bool createPad = false;
+
+	if(m_CreatePads && strstr(aBrdLayerName, copper) != nullptr)
+	{
+      	    fprintf( m_Outfile, "  (pad 1 smd custom (at " );
+	    indent = "        ";
+	    createPad = true;
+	}
+	else
+	{
+      	    fprintf( m_Outfile, "  (fp_poly (pts" );
+	}
 
         jj = 0;
+	double originX = 0;
+	double originY = 0;
         for( ii = 0; ii < aPolygon.PointCount(); ii++ )
         {
             currpoint = aPolygon.CPoint( ii );
+	    if( createPad  && ii == 0)
+	    {
+                originX = ( currpoint.x - offsetX ) / 1e6;
+		originY = ( currpoint.y - offsetY ) / 1e6;
+                fprintf( m_Outfile, "%f %f) (size %f %f) (layers %s)\n    (zone_connect 0)\n    (options (clearance outline) (anchor circle))\n    (primitives\n      (gr_poly (pts\n       ",
+                        originX, originY, width, width, aBrdLayerName );
+	    }
             fprintf( m_Outfile, " (xy %f %f)",
-                    ( currpoint.x - offsetX ) / 1e6,
-                    ( currpoint.y - offsetY ) / 1e6 );
-
+                    ( ( currpoint.x - offsetX ) / 1e6 ) - originX,
+                    ( ( currpoint.y - offsetY ) / 1e6 ) - originY );
             if( jj++ > 6 )
             {
                 jj = 0;
-                fprintf( m_Outfile, ("\n    ") );
+                fprintf( m_Outfile, " \n%s", indent );
             }
         }
         // Close polygon
-        fprintf( m_Outfile, " (xy %f %f) )",
-                ( startpoint.x - offsetX ) / 1e6, ( startpoint.y - offsetY ) / 1e6 );
+	if( createPad )
+	{
+            fprintf( m_Outfile, " (xy %f %f) )",
+                    ( ( startpoint.x - offsetX ) / 1e6 ) - originX, ( ( startpoint.y - offsetY ) / 1e6 ) - originY );
 
-        fprintf( m_Outfile, "(layer %s) (width  %f)\n  )\n", aBrdLayerName, width );
+            fprintf( m_Outfile, "(width  %f) )\n  ))\n", width );
+	}
+	else
+	{
+            fprintf( m_Outfile, " (xy %f %f) )",
+                    ( startpoint.x - offsetX ) / 1e6, ( startpoint.y - offsetY ) / 1e6 );
+
+            fprintf( m_Outfile, "(layer %s) (width  %f)\n  )\n", aBrdLayerName, width );
+	}
 
     }
     break;
