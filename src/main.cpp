@@ -15,7 +15,8 @@ using namespace std;
 
 extern int bitmap2component( potrace_bitmap_t* aPotrace_bitmap, FILE* aOutfile,
                              OUTPUT_FMT_ID aFormat, int aDpi_X, int aDpi_Y,
-                             BMP2CMP_MOD_LAYER aModLayer, const char * layer_name = NULL );
+                             BMP2CMP_MOD_LAYER aModLayer, const char * layer_name = NULL,
+			     bool center = true, bool createPad = false );
 
 
 string pcb_header = "(kicad_pcb (version 4) (host pcbnew 4.0.7)"
@@ -125,7 +126,7 @@ void showUsage()
   cout<<" bitmap2component-cli "<<endl;
   cout<<"" << endl;
   cout<<" Usage"<<endl;
-  cout<<" ./bitmap2component <filename.png> <output filename> <layer> <negative|true/false> <dpi> <threshold|0-255>"<<endl;
+  cout<<" ./bitmap2component <filename.png> <output filename> <layer> <negative|true/false> <dpi> <threshold|0-255> <center|true/false> <create pads|true/false>"<<endl;
   cout<<"\n\n\n" << endl;
 }
 
@@ -137,6 +138,8 @@ int main(int argc, char* argv[])
     int dpi = 600;
     string image_filename;
     string output_filename;
+    bool center = true;
+    bool createPad = false;
 
 
     BMP2CMP_MOD_LAYER kicad_output_layer = MOD_LYR_FCU;
@@ -169,6 +172,22 @@ int main(int argc, char* argv[])
     if (argc > 6){
         threshold = stoi(string(argv[6]));
     }      
+
+    if (argc > 7){
+	if (string(argv[7]) == "true"){
+		center = true;
+	}else{
+		center = false;
+	}
+    }
+
+    if (argc > 8){
+	if (string(argv[8]) == "true"){
+		createPad = true;
+	}else{
+		createPad = false;
+	}
+    }
 
     printf("[bitmap2component] Filename %s\n", image_filename.c_str());
 
@@ -233,7 +252,7 @@ int main(int argc, char* argv[])
    printf("[bitmap2component] Trace image\n");
 
 //    fprintf(pFile, pcb_header.c_str());
-   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, dpi, dpi, kicad_output_layer, layer_name );
+   bitmap2component( potrace_bitmap, pFile, PCBNEW_KICAD_MOD, dpi, dpi, kicad_output_layer, layer_name, center, createPad);
 //    fprintf(pFile, pcb_footer.c_str());
 
 
