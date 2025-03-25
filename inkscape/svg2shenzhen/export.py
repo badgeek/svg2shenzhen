@@ -673,8 +673,6 @@ class Svg2ShenzhenExport(inkex.Effect):
 
         kicad_drill_string = ""
 
-        i = 0
-
         if kicad_mod:
             pad_template = "(pad {n} thru_hole circle (at {x} {y}) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))\n"
         else:
@@ -686,7 +684,29 @@ class Svg2ShenzhenExport(inkex.Effect):
             """
 
         layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Drill"]'
+        
+        kicad_drill_string += self.exportDrillLayer(layerPath, pad_template)
 
+        if kicad_mod:
+            pad_template = "(pad {n} np_thru_hole circle (at {x} {y}) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))\n"
+        else:
+            pad_template = """
+                (module Wire_Pads:SolderWirePad_single_0-8mmDrill (layer F.Cu) (tedit 0) (tstamp 5ABD66D0)
+                    (at {x} {y})
+                    (pad {n} np_thru_hole circle (at 0 0) (size {d} {d}) (drill {d}) (layers *.Cu *.Mask))
+                )
+            """
+
+        layerPath = '//svg:g[@inkscape:groupmode="layer"][@inkscape:label="Drill-NP"]'
+        
+        kicad_drill_string += self.exportDrillLayer(layerPath, pad_template)
+
+        return kicad_drill_string
+
+    def exportDrillLayer(self, layerPath, pad_template):
+    
+        kicad_drill_string = ""
+        
         for layer in self.document.getroot().xpath(layerPath, namespaces=inkex.NSS):
 
             layer_trans = layer.get('transform')
